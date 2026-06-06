@@ -1,0 +1,129 @@
+<svg viewBox="0 0 1000 1400" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .title { font-size: 24px; font-weight: bold; fill: #1a1a1a; }
+      .subtitle { font-size: 14px; fill: #666; }
+      .section-title { font-size: 13px; font-weight: bold; fill: #1a1a1a; }
+      .label { font-size: 12px; fill: #333; }
+      .small-label { font-size: 11px; fill: #666; }
+      .code { font-family: monospace; font-size: 11px; fill: #333; }
+      .box { stroke-width: 2; rx: 3; }
+      .arrow { stroke-width: 2; fill: none; }
+      .failure-text { font-size: 11px; font-weight: bold; fill: #d32f2f; }
+    </style>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#333"/>
+    </marker>
+    <marker id="arrow-red" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#d32f2f"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1000" height="1400" fill="#f8f9fa"/>
+
+  <!-- Header -->
+  <text x="500" y="40" class="title" text-anchor="middle">Use Case 1: LDAP Timeout Failure</text>
+  <text x="500" y="65" class="subtitle" text-anchor="middle">Authentication Flow with External Directory Timeout</text>
+
+  <!-- ========== REQUEST OVERVIEW ========== -->
+  <text x="50" y="110" class="section-title">Request Details</text>
+
+  <rect x="50" y="125" width="900" height="100" fill="#e3f2fd" stroke="#1976d2" class="box"/>
+
+  <text x="70" y="150" class="label" font-weight="bold">Endpoint:</text>
+  <text x="250" y="150" class="code">POST /bytebite/login</text>
+
+  <text x="70" y="175" class="label" font-weight="bold">Trigger:</text>
+  <text x="250" y="175" class="code">-d "username=admin&amp;password=admin&amp;failureType=ldap_timeout"</text>
+
+  <text x="70" y="200" class="label" font-weight="bold">What Happens:</text>
+  <text x="250" y="200" class="small-label">LDAP directory (OpenLDAP on localhost:389) becomes unreachable</text>
+  <text x="250" y="218" class="small-label">Connection timeout during bind() operation</text>
+
+  <!-- ========== EXECUTION FLOW ========== -->
+  <text x="50" y="280" class="section-title">Execution Flow with Failure Point</text>
+
+  <!-- Step 1: HTTP Request -->
+  <rect x="100" y="310" width="800" height="55" fill="#e3f2fd" stroke="#1976d2" class="box"/>
+  <text x="115" y="330" class="label" font-weight="bold">① HTTP Request</text>
+  <text x="115" y="350" class="code">POST /login with credentials + failureType=ldap_timeout</text>
+
+  <!-- Arrow -->
+  <path d="M 500 365 L 500 395" class="arrow" marker-end="url(#arrow)"/>
+
+  <!-- Step 2: Filter Chain -->
+  <rect x="100" y="395" width="800" height="55" fill="#fff3e0" stroke="#f57c00" class="box"/>
+  <text x="115" y="415" class="label" font-weight="bold">② Filter Chain</text>
+  <text x="115" y="435" class="code">LDAPAuthenticationFilter (permits failureType requests)</text>
+
+  <!-- Arrow -->
+  <path d="M 500 450 L 500 480" class="arrow" marker-end="url(#arrow)"/>
+
+  <!-- Step 3: Servlet -->
+  <rect x="100" y="480" width="800" height="70" fill="#bbdefb" stroke="#1976d2" class="box"/>
+  <text x="115" y="500" class="label" font-weight="bold">③ LoginServlet.doPost()</text>
+  <text x="115" y="522" class="code">loginServlet.processLoginRequest(username, password)</text>
+  <text x="115" y="540" class="code">→ userService.authenticate(username, password, failureType)</text>
+
+  <!-- Arrow -->
+  <path d="M 500 550 L 500 580" class="arrow" marker-end="url(#arrow)"/>
+
+  <!-- Step 4: Service -->
+  <rect x="100" y="580" width="800" height="70" fill="#bbdefb" stroke="#1976d2" class="box"/>
+  <text x="115" y="600" class="label" font-weight="bold">④ UserService.authenticate()</text>
+  <text x="115" y="622" class="code">Check failureType == "ldap_timeout" ?</text>
+  <text x="115" y="640" class="code">→ Prepare LDAP connection (Tomcat Realm)</text>
+
+  <!-- Arrow -->
+  <path d="M 500 650 L 500 680" class="arrow" marker-end="url(#arrow)"/>
+
+  <!-- FAILURE POINT -->
+  <rect x="50" y="680" width="900" height="130" fill="#ffccbc" stroke="#d32f2f" class="box" stroke-width="3"/>
+  <rect x="50" y="680" width="900" height="30" fill="#d32f2f"/>
+  <text x="500" y="703" class="label" text-anchor="middle" fill="#fff" font-weight="bold">⚠️ FAILURE INJECTION POINT</text>
+
+  <text x="70" y="730" class="failure-text">failureType == "ldap_timeout" triggers:</text>
+  <text x="85" y="755" class="code">→ Simulate LDAP connection timeout</text>
+  <text x="85" y="773" class="code">→ throw new SocketTimeoutException()</text>
+  <text x="85" y="791" class="code">→ Exception propagates back to LoginServlet</text>
+
+  <!-- Arrow -->
+  <path d="M 500 810 L 500 840" class="arrow-red" marker-end="url(#arrow-red)"/>
+
+  <!-- Step 5: Error Handling -->
+  <rect x="100" y="840" width="800" height="70" fill="#ffcccc" stroke="#d32f2f" class="box"/>
+  <text x="115" y="860" class="label" font-weight="bold">⑤ Exception Caught in LoginServlet</text>
+  <text x="115" y="882" class="code">catch (SocketTimeoutException e)</text>
+  <text x="115" y="900" class="code">→ logger.warn("⚠️ LDAP Failure Injection: ...")</text>
+
+  <!-- Arrow -->
+  <path d="M 500 910 L 500 940" class="arrow" marker-end="url(#arrow)"/>
+
+  <!-- Step 6: Response -->
+  <rect x="100" y="940" width="800" height="55" fill="#f5f5f5" stroke="#666" class="box"/>
+  <text x="115" y="960" class="label" font-weight="bold">⑥ HTTP 401 / Error Response</text>
+  <text x="115" y="980" class="code">JSON: { error: "LDAP connection timeout" }</text>
+
+  <!-- ========== DIAGNOSTIC SIGNALS ========== -->
+  <text x="50" y="1050" class="section-title">What to Look For in catalina.log</text>
+
+  <rect x="50" y="1070" width="900" height="280" fill="#fff9c4" stroke="#fbc02d" class="box" stroke-width="2"/>
+
+  <text x="70" y="1095" class="label" font-weight="bold">Log Signals:</text>
+
+  <rect x="70" y="1115" width="860" height="50" fill="#fff" stroke="#fbc02d" class="box"/>
+  <text x="85" y="1135" class="code" font-weight="bold">"⚠️ LDAP Failure Injection: Simulating connection timeout"</text>
+  <text x="85" y="1155" class="small-label">This message is logged at line 88 of LoginServlet.java</text>
+
+  <rect x="70" y="1175" width="860" height="50" fill="#fff" stroke="#fbc02d" class="box"/>
+  <text x="85" y="1195" class="code" font-weight="bold">"SocketTimeoutException" or "java.net.ConnectException"</text>
+  <text x="85" y="1215" class="small-label">Stack trace shows LDAP connection attempt failed</text>
+
+  <rect x="70" y="1235" width="860" height="50" fill="#fff" stroke="#fbc02d" class="box"/>
+  <text x="85" y="1255" class="code" font-weight="bold">timestamp in catalina.YYYY-MM-DD.log</text>
+  <text x="85" y="1275" class="small-label">Example: 01-Jun-2026 10:03:32.423 WARN [pool-X-thread-Y]</text>
+
+  <!-- Footer -->
+  <text x="500" y="1370" class="small-label" text-anchor="middle" font-style="italic">Use this diagram to trace LDAP authentication failures in book chapter on external service timeouts</text>
+</svg>

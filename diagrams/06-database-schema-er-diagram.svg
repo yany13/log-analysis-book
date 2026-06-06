@@ -1,0 +1,409 @@
+<svg viewBox="0 0 2200 1600" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .entity { fill: #ffffff; stroke: #2c3e50; stroke-width: 2; }
+      .entity-header { fill: #2c3e50; stroke: #2c3e50; stroke-width: 2; }
+      .entity-title { fill: #ffffff; font-weight: bold; font-size: 14px; font-family: Arial; }
+      .attribute { fill: #2c3e50; font-size: 11px; font-family: 'Courier New', monospace; }
+      .pk { fill: #e74c3c; font-weight: bold; }
+      .fk { fill: #3498db; font-weight: bold; }
+      .type { fill: #7f8c8d; font-size: 9px; }
+      .relation-line { stroke: #e67e22; stroke-width: 2; fill: none; }
+      .title { fill: #1a1a1a; font-weight: bold; font-size: 26px; font-family: Arial; }
+      .subtitle { fill: #7f8c8d; font-size: 13px; font-family: Arial; }
+      .section-label { fill: #2c3e50; font-weight: bold; font-size: 11px; }
+    </style>
+    <marker id="crowfoot-one" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <circle cx="10" cy="6" r="1.5" fill="#e67e22"/>
+    </marker>
+    <marker id="crowfoot-many" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M 8 2 L 10 6 L 8 10 M 5 2 L 7 6 L 5 10" stroke="#e67e22" stroke-width="1.5" fill="none"/>
+    </marker>
+  </defs>
+
+  <!-- Title -->
+  <text x="1100" y="35" text-anchor="middle" class="title">ByteBite Database ERD</text>
+  <text x="1100" y="60" text-anchor="middle" class="subtitle">PostgreSQL 15 | 11 Tables | Centered on Users Entity</text>
+
+  <!-- ============ USERS TABLE (CENTER) ============ -->
+  <g id="users-entity">
+    <rect x="900" y="650" width="400" height="280" class="entity"/>
+    <rect x="900" y="650" width="400" height="32" class="entity-header"/>
+    <text x="1100" y="675" text-anchor="middle" class="entity-title">users [CENTRAL]</text>
+    <line x1="900" y1="682" x2="1300" y2="682" stroke="#2c3e50" stroke-width="1"/>
+
+    <text x="920" y="705" class="attribute"><tspan class="pk">PK</tspan> user_id</text>
+    <text x="1200" y="705" class="type">SERIAL</text>
+
+    <text x="920" y="728" class="attribute">username</text>
+    <text x="1200" y="728" class="type">VARCHAR</text>
+
+    <text x="920" y="751" class="attribute">email</text>
+    <text x="1200" y="751" class="type">VARCHAR</text>
+
+    <text x="920" y="774" class="attribute">ldap_dn</text>
+    <text x="1200" y="774" class="type">VARCHAR</text>
+
+    <text x="920" y="797" class="attribute">password_hash</text>
+    <text x="1200" y="797" class="type">VARCHAR</text>
+
+    <text x="920" y="820" class="attribute">is_active, is_admin</text>
+    <text x="1200" y="820" class="type">BOOL</text>
+
+    <text x="920" y="843" class="attribute">created_at, updated_at</text>
+    <text x="1200" y="843" class="type">TIMESTAMP</text>
+
+    <text x="920" y="866" class="attribute">last_login</text>
+    <text x="1200" y="866" class="type">TIMESTAMP</text>
+
+    <text x="920" y="889" class="attribute">Indexes: username, email</text>
+    <text x="1200" y="889" class="type">IDX</text>
+  </g>
+
+  <!-- ============ TOP-LEFT: SESSIONS ============ -->
+  <g id="sessions-entity">
+    <rect x="50" y="200" width="280" height="220" class="entity"/>
+    <rect x="50" y="200" width="280" height="30" class="entity-header"/>
+    <text x="190" y="222" text-anchor="middle" class="entity-title">sessions</text>
+    <line x1="50" y1="230" x2="330" y2="230" stroke="#2c3e50" stroke-width="1"/>
+
+    <text x="65" y="250" class="attribute"><tspan class="pk">PK</tspan> session_id</text>
+    <text x="210" y="250" class="type">VARCHAR(128)</text>
+
+    <text x="65" y="270" class="attribute"><tspan class="fk">FK</tspan> user_id</text>
+    <text x="210" y="270" class="type">INT</text>
+
+    <text x="65" y="290" class="attribute">session_data</text>
+    <text x="210" y="290" class="type">TEXT</text>
+
+    <text x="65" y="310" class="attribute">ip_address</text>
+    <text x="210" y="310" class="type">VARCHAR(45)</text>
+
+    <text x="65" y="330" class="attribute">user_agent</text>
+    <text x="210" y="330" class="type">TEXT</text>
+
+    <text x="65" y="350" class="attribute">created_at, expires_at</text>
+    <text x="210" y="350" class="type">TIMESTAMP</text>
+
+    <text x="65" y="370" class="attribute">is_active</text>
+    <text x="210" y="370" class="type">BOOL</text>
+
+    <text x="65" y="390" class="attribute">Idx: user_id, expires_at</text>
+    <text x="210" y="390" class="type">IDX</text>
+  </g>
+
+  <!-- ============ TOP: USER_ROLES & MAPPING ============ -->
+  <g id="user-roles-entity">
+    <rect x="850" y="50" width="250" height="140" class="entity"/>
+    <rect x="850" y="50" width="250" height="30" class="entity-header"/>
+    <text x="975" y="72" text-anchor="middle" class="entity-title">user_roles</text>
+    <line x1="850" y1="80" x2="1100" y2="80" stroke="#2c3e50" stroke-width="1"/>
+
+    <text x="865" y="100" class="attribute"><tspan class="pk">PK</tspan> role_id</text>
+    <text x="990" y="100" class="type">SERIAL</text>
+
+    <text x="865" y="120" class="attribute">role_name</text>
+    <text x="990" y="120" class="type">VARCHAR</text>
+
+    <text x="865" y="140" class="attribute">description, created_at</text>
+    <text x="990" y="140" class="type">TEXT/TS</text>
+
+    <text x="865" y="160" class="attribute">Idx: role_name (UNQ)</text>
+    <text x="990" y="160" class="type">IDX</text>
+  </g>
+
+  <g id="user-role-mapping-entity">
+    <rect x="1150" y="50" width="250" height="140" class="entity"/>
+    <rect x="1150" y="50" width="250" height="30" class="entity-header"/>
+    <text x="1275" y="72" text-anchor="middle" class="entity-title">user_role_mapping</text>
+    <line x1="1150" y1="80" x2="1400" y2="80" stroke="#2c3e50" stroke-width="1"/>
+
+    <text x="1165" y="100" class="attribute"><tspan class="fk">FK</tspan> user_id (PK)</text>
+    <text x="1300" y="100" class="type">INT</text>
+
+    <text x="1165" y="120" class="attribute"><tspan class="fk">FK</tspan> role_id (PK)</text>
+    <text x="1300" y="120" class="type">INT</text>
+
+    <text x="1165" y="140" class="attribute">assigned_at</text>
+    <text x="1300" y="140" class="type">TIMESTAMP</text>
+
+    <text x="1165" y="160" class="attribute">Junction Table</text>
+    <text x="1300" y="160" class="type">-</text>
+  </g>
+
+  <!-- ============ RIGHT: ORDERS & ITEMS ============ -->
+  <g id="orders-entity">
+    <rect x="1650" y="250" width="500" height="320" class="entity"/>
+    <rect x="1650" y="250" width="500" height="30" class="entity-header"/>
+    <text x="1900" y="272" text-anchor="middle" class="entity-title">orders</text>
+    <line x1="1650" y1="280" x2="2150" y2="280" stroke="#2c3e50" stroke-width="1"/>
+
+    <text x="1670" y="300" class="attribute"><tspan class="pk">PK</tspan> order_id</text>
+    <text x="1950" y="300" class="type">BIGSERIAL</text>
+
+    <text x="1670" y="320" class="attribute"><tspan class="fk">FK</tspan> user_id</text>
+    <text x="1950" y="320" class="type">INT</text>
+
+    <text x="1670" y="340" class="attribute">order_number</text>
+    <text x="1950" y="340" class="type">VARCHAR(50)</text>
+
+    <text x="1670" y="360" class="attribute">status</text>
+    <text x="1950" y="360" class="type">VARCHAR(50)</text>
+
+    <text x="1670" y="380" class="attribute">total_amount, tax_amount</text>
+    <text x="1950" y="380" class="type">DECIMAL</text>
+
+    <text x="1670" y="400" class="attribute">shipping_amount</text>
+    <text x="1950" y="400" class="type">DECIMAL</text>
+
+    <text x="1670" y="420" class="attribute">shipping_address</text>
+    <text x="1950" y="420" class="type">TEXT</text>
+
+    <text x="1670" y="440" class="attribute">billing_address</text>
+    <text x="1950" y="440" class="type">TEXT</text>
+
+    <text x="1670" y="460" class="attribute">order_date, last_updated</text>
+    <text x="1950" y="460" class="type">TIMESTAMP</text>
+
+    <text x="1670" y="485" class="attribute">Idx: user_id, status, order_date</text>
+    <text x="1950" y="485" class="type">IDX</text>
+  </g>
+
+  <!-- ============ BOTTOM-RIGHT: ORDER_ITEMS & KDS ============ -->
+  <g id="order-items-entity">
+    <rect x="1650" y="650" width="500" height="180" class="entity"/>
+    <rect x="1650" y="650" width="500" height="30" class="entity-header"/>
+    <text x="1900" y="672" text-anchor="middle" class="entity-title">order_items</text>
+    <line x1="1650" y1="680" x2="2150" y2="680" stroke="#2c3e50" stroke-width="1"/>
+
+    <text x="1670" y="700" class="attribute"><tspan class="pk">PK</tspan> order_item_id</text>
+    <text x="1950" y="700" class="type">BIGSERIAL</text>
+
+    <text x="1670" y="720" class="attribute"><tspan class="fk">FK</tspan> order_id</text>
+    <text x="1950" y="720" class="type">BIGINT</text>
+
+    <text x="1670" y="740" class="attribute">product_id, product_name</text>
+    <text x="1950" y="740" class="type">VARCHAR</text>
+
+    <text x="1670" y="760" class="attribute">quantity, unit_price, total_price</text>
+    <text x="1950" y="760" class="type">INT/DECIMAL</text>
+
+    <text x="1670" y="785" class="attribute">Idx: order_id</text>
+    <text x="1950" y="785" class="type">IDX</text>
+  </g>
+
+  <g id="kds-orders-entity">
+    <rect x="1650" y="900" width="500" height="180" class="entity"/>
+    <rect x="1650" y="900" width="500" height="30" class="entity-header"/>
+    <text x="1900" y="922" text-anchor="middle" class="entity-title">kds_orders</text>
+    <line x1="1650" y1="930" x2="2150" y2="930" stroke="#2c3e50" stroke-width="1"/>
+
+    <text x="1670" y="950" class="attribute"><tspan class="pk">PK</tspan> kds_order_id</text>
+    <text x="1950" y="950" class="type">BIGSERIAL</text>
+
+    <text x="1670" y="970" class="attribute"><tspan class="fk">FK</tspan> order_id</text>
+    <text x="1950" y="970" class="type">BIGINT</text>
+
+    <text x="1670" y="990" class="attribute">kds_status, priority_level</text>
+    <text x="1950" y="990" class="type">VARCHAR/INT</text>
+
+    <text x="1670" y="1010" class="attribute">estimated_ready_time</text>
+    <text x="1950" y="1010" class="type">TIMESTAMP</text>
+
+    <text x="1670" y="1030" class="attribute">actual_ready_time</text>
+    <text x="1950" y="1030" class="type">TIMESTAMP</text>
+
+    <text x="1670" y="1055" class="attribute">Idx: kds_status, priority_level</text>
+    <text x="1950" y="1055" class="type">IDX</text>
+  </g>
+
+  <!-- ============ LEFT: LOGS & AUDIT ============ -->
+  <g id="app-logs-entity">
+    <rect x="50" y="500" width="300" height="340" class="entity"/>
+    <rect x="50" y="500" width="300" height="30" class="entity-header"/>
+    <text x="200" y="522" text-anchor="middle" class="entity-title">application_logs</text>
+    <line x1="50" y1="530" x2="350" y2="530" stroke="#2c3e50" stroke-width="1"/>
+
+    <text x="65" y="550" class="attribute"><tspan class="pk">PK</tspan> log_id</text>
+    <text x="210" y="550" class="type">BIGSERIAL</text>
+
+    <text x="65" y="570" class="attribute"><tspan class="fk">FK</tspan> user_id</text>
+    <text x="210" y="570" class="type">INT</text>
+
+    <text x="65" y="590" class="attribute"><tspan class="fk">FK</tspan> session_id</text>
+    <text x="210" y="590" class="type">VARCHAR(128)</text>
+
+    <text x="65" y="610" class="attribute">level, category</text>
+    <text x="210" y="610" class="type">VARCHAR</text>
+
+    <text x="65" y="630" class="attribute">message, stack_trace</text>
+    <text x="210" y="630" class="type">TEXT</text>
+
+    <text x="65" y="650" class="attribute">source_class, method</text>
+    <text x="210" y="650" class="type">VARCHAR</text>
+
+    <text x="65" y="670" class="attribute">thread_name</text>
+    <text x="210" y="670" class="type">VARCHAR</text>
+
+    <text x="65" y="690" class="attribute">request_id</text>
+    <text x="210" y="690" class="type">VARCHAR(128)</text>
+
+    <text x="65" y="710" class="attribute">created_at</text>
+    <text x="210" y="710" class="type">TIMESTAMP</text>
+
+    <text x="65" y="735" class="attribute">Idx: level, category, user_id, created_at</text>
+    <text x="210" y="735" class="type">IDX</text>
+  </g>
+
+  <g id="api-audit-entity">
+    <rect x="50" y="920" width="300" height="260" class="entity"/>
+    <rect x="50" y="920" width="300" height="30" class="entity-header"/>
+    <text x="200" y="942" text-anchor="middle" class="entity-title">api_audit_log</text>
+    <line x1="50" y1="950" x2="350" y2="950" stroke="#2c3e50" stroke-width="1"/>
+
+    <text x="65" y="970" class="attribute"><tspan class="pk">PK</tspan> audit_id</text>
+    <text x="210" y="970" class="type">BIGSERIAL</text>
+
+    <text x="65" y="990" class="attribute"><tspan class="fk">FK</tspan> user_id</text>
+    <text x="210" y="990" class="type">INT</text>
+
+    <text x="65" y="1010" class="attribute">api_endpoint, http_method</text>
+    <text x="210" y="1010" class="type">VARCHAR</text>
+
+    <text x="65" y="1030" class="attribute">request_body</text>
+    <text x="210" y="1030" class="type">TEXT</text>
+
+    <text x="65" y="1050" class="attribute">response_status, response_time_ms</text>
+    <text x="210" y="1050" class="type">INT</text>
+
+    <text x="65" y="1070" class="attribute">ip_address, created_at</text>
+    <text x="210" y="1070" class="type">VARCHAR/TS</text>
+
+    <text x="65" y="1095" class="attribute">Idx: user_id, created_at</text>
+    <text x="210" y="1095" class="type">IDX</text>
+  </g>
+
+  <!-- ============ BOTTOM-CENTER: ANALYTICS & MENU ============ -->
+  <g id="analytics-entity">
+    <rect x="450" y="1050" width="350" height="290" class="entity"/>
+    <rect x="450" y="1050" width="350" height="30" class="entity-header"/>
+    <text x="625" y="1072" text-anchor="middle" class="entity-title">analytics_events</text>
+    <line x1="450" y1="1080" x2="800" y2="1080" stroke="#2c3e50" stroke-width="1"/>
+
+    <text x="465" y="1100" class="attribute"><tspan class="pk">PK</tspan> event_id</text>
+    <text x="700" y="1100" class="type">BIGSERIAL</text>
+
+    <text x="465" y="1120" class="attribute"><tspan class="fk">FK</tspan> user_id</text>
+    <text x="700" y="1120" class="type">INT</text>
+
+    <text x="465" y="1140" class="attribute"><tspan class="fk">FK</tspan> session_id</text>
+    <text x="700" y="1140" class="type">VARCHAR</text>
+
+    <text x="465" y="1160" class="attribute">event_type</text>
+    <text x="700" y="1160" class="type">VARCHAR(100)</text>
+
+    <text x="465" y="1180" class="attribute">event_data</text>
+    <text x="700" y="1180" class="type">JSONB</text>
+
+    <text x="465" y="1200" class="attribute">page_url, referrer_url</text>
+    <text x="700" y="1200" class="type">VARCHAR</text>
+
+    <text x="465" y="1220" class="attribute">ip_address, user_agent</text>
+    <text x="700" y="1220" class="type">TEXT</text>
+
+    <text x="465" y="1240" class="attribute">created_at</text>
+    <text x="700" y="1240" class="type">TIMESTAMP</text>
+
+    <text x="465" y="1265" class="attribute">Idx: event_type, user_id, created_at</text>
+    <text x="700" y="1265" class="type">IDX</text>
+  </g>
+
+  <g id="menu-items-entity">
+    <rect x="900" y="1050" width="350" height="220" class="entity"/>
+    <rect x="900" y="1050" width="350" height="30" class="entity-header"/>
+    <text x="1075" y="1072" text-anchor="middle" class="entity-title">menu_items</text>
+    <line x1="900" y1="1080" x2="1250" y2="1080" stroke="#2c3e50" stroke-width="1"/>
+
+    <text x="915" y="1100" class="attribute"><tspan class="pk">PK</tspan> id</text>
+    <text x="1150" y="1100" class="type">SERIAL</text>
+
+    <text x="915" y="1120" class="attribute">name</text>
+    <text x="1150" y="1120" class="type">VARCHAR(255)</text>
+
+    <text x="915" y="1140" class="attribute">price</text>
+    <text x="1150" y="1140" class="type">DECIMAL</text>
+
+    <text x="915" y="1160" class="attribute">description</text>
+    <text x="1150" y="1160" class="type">TEXT</text>
+
+    <text x="915" y="1180" class="attribute">category</text>
+    <text x="1150" y="1180" class="type">VARCHAR(100)</text>
+
+    <text x="915" y="1200" class="attribute">available, created_at</text>
+    <text x="1150" y="1200" class="type">BOOL/TS</text>
+
+    <text x="915" y="1225" class="attribute">Idx: category, available</text>
+    <text x="1150" y="1225" class="type">IDX</text>
+  </g>
+
+  <!-- ============ RELATIONSHIP ARROWS ============ -->
+
+  <!-- users <-> sessions (top-left) -->
+  <path d="M 900 750 Q 500 500 330 350" class="relation-line" marker-start="url(#crowfoot-one)" marker-end="url(#crowfoot-many)"/>
+  <text x="650" y="520" class="section-label" style="fill: #e67e22;">1:N</text>
+
+  <!-- users <-> user_roles (top) -->
+  <path d="M 1000 650 Q 900 350 975 190" class="relation-line" marker-start="url(#crowfoot-one)" marker-end="url(#crowfoot-many)"/>
+  <text x="920" y="400" class="section-label" style="fill: #e67e22;">1:N</text>
+
+  <!-- users <-> user_role_mapping (top-right) -->
+  <path d="M 1100 650 Q 1150 350 1275 190" class="relation-line" marker-start="url(#crowfoot-one)" marker-end="url(#crowfoot-many)"/>
+  <text x="1150" y="400" class="section-label" style="fill: #e67e22;">1:N</text>
+
+  <!-- users <-> orders (right) -->
+  <path d="M 1300 750 L 1650 410" class="relation-line" marker-start="url(#crowfoot-one)" marker-end="url(#crowfoot-many)"/>
+  <text x="1450" y="560" class="section-label" style="fill: #e67e22;">1:N</text>
+
+  <!-- orders <-> order_items (right vertical) -->
+  <path d="M 1900 570 L 1900 650" class="relation-line" marker-start="url(#crowfoot-one)" marker-end="url(#crowfoot-many)"/>
+  <text x="1920" y="610" class="section-label" style="fill: #e67e22;">1:N</text>
+
+  <!-- orders <-> kds_orders (right vertical) -->
+  <path d="M 1900 745 L 1900 900" class="relation-line" marker-start="url(#crowfoot-one)" marker-end="url(#crowfoot-many)"/>
+  <text x="1920" y="830" class="section-label" style="fill: #e67e22;">1:N</text>
+
+  <!-- users <-> application_logs (left) -->
+  <path d="M 900 850 L 350 670" class="relation-line" marker-start="url(#crowfoot-one)" marker-end="url(#crowfoot-many)"/>
+  <text x="600" y="760" class="section-label" style="fill: #e67e22;">1:N</text>
+
+  <!-- sessions <-> application_logs (left vertical) -->
+  <path d="M 190 420 L 200 500" class="relation-line" marker-start="url(#crowfoot-one)" marker-end="url(#crowfoot-many)"/>
+  <text x="150" y="460" class="section-label" style="fill: #e67e22;">1:N</text>
+
+  <!-- users <-> api_audit_log (left) -->
+  <path d="M 900 900 L 350 1050" class="relation-line" marker-start="url(#crowfoot-one)" marker-end="url(#crowfoot-many)"/>
+  <text x="600" y="980" class="section-label" style="fill: #e67e22;">1:N</text>
+
+  <!-- users <-> analytics_events (bottom) -->
+  <path d="M 1000 930 L 625 1050" class="relation-line" marker-start="url(#crowfoot-one)" marker-end="url(#crowfoot-many)"/>
+  <text x="800" y="990" class="section-label" style="fill: #e67e22;">1:N</text>
+
+  <!-- sessions <-> analytics_events (bottom) -->
+  <path d="M 200 420 Q 400 800 500 1050" class="relation-line" marker-start="url(#crowfoot-one)" marker-end="url(#crowfoot-many)"/>
+  <text x="320" y="750" class="section-label" style="fill: #e67e22;">1:N</text>
+
+  <!-- ============ LEGEND ============ -->
+  <g>
+    <rect x="30" y="1380" width="2140" height="180" fill="#f8f9fa" stroke="#bdc3c7" stroke-width="1" rx="5"/>
+
+    <text x="50" y="1405" class="section-label" style="font-size: 13px;">DESIGN OVERVIEW</text>
+    <text x="50" y="1428" class="attribute">USERS is the central entity connecting all operations: Authentication (sessions, roles), Transactions (orders), and Diagnostics (logs, audit, analytics)</text>
+    <text x="50" y="1451" class="attribute">All relationships are One-to-Many (1:N). PK = Primary Key uniquely identifies rows | FK = Foreign Key references another table</text>
+    <text x="50" y="1474" class="attribute">Business Flow: Users login (sessions) - Place orders - Order items tracked - KDS processes kitchen prep | Diagnostics: Every user action logged in application_logs and api_audit_log with request correlation via request_id</text>
+    <text x="50" y="1497" class="attribute">For Production Debugging: Use application_logs for error traces, api_audit_log for performance metrics, analytics_events for behavior analysis. Correlate via user_id and request_id fields.</text>
+    <text x="50" y="1520" class="attribute">Total: 11 Tables | 45+ Columns | 15+ Indexes | All timestamps UTC | Cascading deletes maintain referential integrity</text>
+  </g>
+
+  <!-- Footer -->
+  <text x="1100" y="1560" text-anchor="middle" class="subtitle">ByteBite Debugging Lab | ERD v3.0 | Users-Centric Design for Production Failure Analysis</text>
+</svg>

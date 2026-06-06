@@ -1,0 +1,336 @@
+<svg viewBox="0 0 1600 1400" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .title { font-size: 26px; font-weight: bold; fill: #1a1a1a; }
+      .section-title { font-size: 14px; font-weight: bold; fill: #1a1a1a; }
+      .label { font-size: 12px; fill: #333; }
+      .small-label { font-size: 10px; fill: #666; }
+      .box { stroke-width: 2; rx: 3; }
+      .arrow { stroke-width: 2; fill: none; }
+      .code { font-family: monospace; font-size: 10px; fill: #333; }
+    </style>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#333"/>
+    </marker>
+    <marker id="arrow-red" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#d32f2f"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1600" height="1400" fill="#f8f9fa"/>
+
+  <!-- Title -->
+  <text x="800" y="35" class="title" text-anchor="middle">Servlet → Service → DAO → Connection Architecture</text>
+  <text x="800" y="60" font-size="14" text-anchor="middle" fill="#666">6 Servlets • 3 Services • HikariCP Connection Pool • 5 Failure Injection Points</text>
+
+  <!-- ========== REQUEST LIFECYCLE ========== -->
+  <text x="800" y="100" class="section-title" text-anchor="middle">HTTP Request Lifecycle with Failure Points</text>
+
+  <!-- HTTP Request -->
+  <rect x="650" y="120" width="300" height="50" fill="#e3f2fd" stroke="#1976d2" class="box"/>
+  <text x="800" y="150" class="label" text-anchor="middle" font-weight="bold">HTTP Request Arrives</text>
+
+  <!-- Arrow -->
+  <path d="M 800 170 L 800 200" class="arrow" marker-end="url(#arrow)"/>
+
+  <!-- Filter Chain -->
+  <rect x="600" y="200" width="400" height="50" fill="#fff3e0" stroke="#f57c00" class="box"/>
+  <text x="800" y="230" class="label" text-anchor="middle" font-weight="bold">Filter Chain (RequestLogging → Auth → CORS → Servlet Router)</text>
+
+  <!-- Arrow -->
+  <path d="M 800 250 L 800 280" class="arrow" marker-end="url(#arrow)"/>
+
+  <!-- ========== 5 FAILURE INJECTION FLOWS ========== -->
+  <text x="800" y="320" class="section-title" text-anchor="middle">5 Servlet Flows with Failure Injection Points</text>
+
+  <!-- ========== FLOW 1: LOGIN (LDAP_TIMEOUT) ========== -->
+  <g id="flow-1">
+    <rect x="50" y="350" width="280" height="380" fill="#e3f2fd" stroke="#1976d2" class="box" stroke-width="2"/>
+    <rect x="50" y="350" width="280" height="25" fill="#1976d2"/>
+    <text x="190" y="368" class="label" text-anchor="middle" fill="#fff" font-weight="bold">① LoginServlet</text>
+    <text x="60" y="390" class="small-label" font-weight="bold">POST /login (credentials)</text>
+
+    <!-- Servlet -->
+    <rect x="60" y="405" width="260" height="50" fill="#bbdefb" stroke="#1976d2" class="box"/>
+    <text x="190" y="425" class="code">LoginServlet.doPost()</text>
+    <text x="190" y="437" class="code">userService.authenticate()</text>
+
+    <!-- Arrow -->
+    <path d="M 190 455 L 190 475" class="arrow" marker-end="url(#arrow)"/>
+
+    <!-- Service -->
+    <rect x="60" y="475" width="260" height="50" fill="#bbdefb" stroke="#1976d2" class="box"/>
+    <text x="190" y="495" class="code">UserService.authenticate()</text>
+    <text x="190" y="507" class="code">LDAP bind: cn=user,...</text>
+
+    <!-- Failure Point -->
+    <rect x="60" y="540" width="260" height="60" fill="#ffccbc" stroke="#d32f2f" class="box" stroke-width="2"/>
+    <text x="190" y="560" class="small-label" text-anchor="middle" font-weight="bold" fill="#d32f2f">⚠️ FAILURE INJECTION</text>
+    <text x="190" y="575" class="code" text-anchor="middle" fill="#d32f2f">failureType == "ldap_timeout"</text>
+    <text x="190" y="587" class="code" text-anchor="middle" fill="#d32f2f">→ throw timeout exception</text>
+
+    <!-- Arrow -->
+    <path d="M 190 600 L 190 620" class="arrow" marker-end="url(#arrow)"/>
+
+    <!-- DAO -->
+    <rect x="60" y="620" width="260" height="60" fill="#bbdefb" stroke="#1976d2" class="box"/>
+    <text x="190" y="640" class="code">UserDAO.findByUsername()</text>
+    <text x="190" y="652" class="code">HikariCP: getConnection()</text>
+    <text x="190" y="664" class="code">PreparedStatement: SELECT</text>
+
+    <!-- Log Signal -->
+    <rect x="60" y="695" width="260" height="30" fill="#fff9c4" stroke="#fbc02d" class="box"/>
+    <text x="190" y="714" class="small-label" text-anchor="middle" font-style="italic">"⚠️ LDAP Failure Injection: timeout"</text>
+  </g>
+
+  <!-- ========== FLOW 2: MENU (DB_LEAK) ========== -->
+  <g id="flow-2">
+    <rect x="360" y="350" width="280" height="380" fill="#f3e5f5" stroke="#7b1fa2" class="box" stroke-width="2"/>
+    <rect x="360" y="350" width="280" height="25" fill="#7b1fa2"/>
+    <text x="500" y="368" class="label" text-anchor="middle" fill="#fff" font-weight="bold">② MenuServlet</text>
+    <text x="370" y="390" class="small-label" font-weight="bold">GET /api/menu</text>
+
+    <!-- Servlet -->
+    <rect x="370" y="405" width="260" height="50" fill="#f0e8f7" stroke="#7b1fa2" class="box"/>
+    <text x="500" y="425" class="code">MenuServlet.doGet()</text>
+    <text x="500" y="437" class="code">menuService.getMenuItems()</text>
+
+    <!-- Arrow -->
+    <path d="M 500 455 L 500 475" class="arrow" marker-end="url(#arrow)"/>
+
+    <!-- Service -->
+    <rect x="370" y="475" width="260" height="50" fill="#f0e8f7" stroke="#7b1fa2" class="box"/>
+    <text x="500" y="495" class="code">MenuService.getMenuItems()</text>
+    <text x="500" y="507" class="code">menuDAO.getAllAvailable()</text>
+
+    <!-- Failure Point -->
+    <rect x="370" y="540" width="260" height="60" fill="#ffccbc" stroke="#d32f2f" class="box" stroke-width="2"/>
+    <text x="500" y="560" class="small-label" text-anchor="middle" font-weight="bold" fill="#d32f2f">⚠️ FAILURE INJECTION</text>
+    <text x="500" y="575" class="code" text-anchor="middle" fill="#d32f2f">failureType == "db_leak"</text>
+    <text x="500" y="587" class="code" text-anchor="middle" fill="#d32f2f">→ skip conn.close()</text>
+
+    <!-- Arrow -->
+    <path d="M 500 600 L 500 620" class="arrow" marker-end="url(#arrow)"/>
+
+    <!-- DAO -->
+    <rect x="370" y="620" width="260" height="60" fill="#f0e8f7" stroke="#7b1fa2" class="box"/>
+    <text x="500" y="640" class="code">MenuDAO.getAllAvailable()</text>
+    <text x="500" y="652" class="code">HikariCP: getConnection()</text>
+    <text x="500" y="664" class="code">SELECT menu_items [LEAK]</text>
+
+    <!-- Log Signal -->
+    <rect x="370" y="695" width="260" height="30" fill="#fff9c4" stroke="#fbc02d" class="box"/>
+    <text x="500" y="714" class="small-label" text-anchor="middle" font-style="italic">"Cannot get a connection..."</text>
+  </g>
+
+  <!-- ========== FLOW 3: ANALYTICS (OOM) ========== -->
+  <g id="flow-3">
+    <rect x="670" y="350" width="280" height="380" fill="#e8f5e9" stroke="#388e3c" class="box" stroke-width="2"/>
+    <rect x="670" y="350" width="280" height="25" fill="#388e3c"/>
+    <text x="810" y="368" class="label" text-anchor="middle" fill="#fff" font-weight="bold">③ AnalyticsServlet</text>
+    <text x="680" y="390" class="small-label" font-weight="bold">GET /api/analytics?all-time</text>
+
+    <!-- Servlet -->
+    <rect x="680" y="405" width="260" height="50" fill="#d0efd4" stroke="#388e3c" class="box"/>
+    <text x="810" y="425" class="code">AnalyticsServlet.doGet()</text>
+    <text x="810" y="437" class="code">analyticsService.generate()</text>
+
+    <!-- Arrow -->
+    <path d="M 810 455 L 810 475" class="arrow" marker-end="url(#arrow)"/>
+
+    <!-- Service -->
+    <rect x="680" y="475" width="260" height="50" fill="#d0efd4" stroke="#388e3c" class="box"/>
+    <text x="810" y="495" class="code">AnalyticsService.generate()</text>
+    <text x="810" y="507" class="code">analyticsDAO.getAllEvents()</text>
+
+    <!-- Failure Point -->
+    <rect x="680" y="540" width="260" height="60" fill="#ffccbc" stroke="#d32f2f" class="box" stroke-width="2"/>
+    <text x="810" y="560" class="small-label" text-anchor="middle" font-weight="bold" fill="#d32f2f">⚠️ FAILURE INJECTION</text>
+    <text x="810" y="575" class="code" text-anchor="middle" fill="#d32f2f">failureType == "oom"</text>
+    <text x="810" y="587" class="code" text-anchor="middle" fill="#d32f2f">→ load 10K events</text>
+
+    <!-- Arrow -->
+    <path d="M 810 600 L 810 620" class="arrow" marker-end="url(#arrow)"/>
+
+    <!-- DAO -->
+    <rect x="680" y="620" width="260" height="60" fill="#d0efd4" stroke="#388e3c" class="box"/>
+    <text x="810" y="640" class="code">AnalyticsDAO.getAllEvents()</text>
+    <text x="810" y="652" class="code">SELECT * (10K rows × 100KB)</text>
+    <text x="810" y="664" class="code">Heap: 512m → OOM</text>
+
+    <!-- Log Signal -->
+    <rect x="680" y="695" width="260" height="30" fill="#fff9c4" stroke="#fbc02d" class="box"/>
+    <text x="810" y="714" class="small-label" text-anchor="middle" font-style="italic">"OutOfMemoryError: heap space"</text>
+  </g>
+
+  <!-- ========== FLOW 4: KDS (DEADLOCK) ========== -->
+  <g id="flow-4">
+    <rect x="980" y="350" width="280" height="380" fill="#fff3e0" stroke="#f57c00" class="box" stroke-width="2"/>
+    <rect x="980" y="350" width="280" height="25" fill="#f57c00"/>
+    <text x="1120" y="368" class="label" text-anchor="middle" fill="#fff" font-weight="bold">④ KDSServlet</text>
+    <text x="990" y="390" class="small-label" font-weight="bold">POST /api/kds (JSON)</text>
+
+    <!-- Servlet -->
+    <rect x="990" y="405" width="260" height="50" fill="#ffe0b2" stroke="#f57c00" class="box"/>
+    <text x="1120" y="425" class="code">KDSServlet.doPost()</text>
+    <text x="1120" y="437" class="code">kdsService.updateStatus()</text>
+
+    <!-- Arrow -->
+    <path d="M 1120 455 L 1120 475" class="arrow" marker-end="url(#arrow)"/>
+
+    <!-- Service -->
+    <rect x="990" y="475" width="260" height="50" fill="#ffe0b2" stroke="#f57c00" class="box"/>
+    <text x="1120" y="495" class="code">KDSService.updateStatus()</text>
+    <text x="1120" y="507" class="code">kdsDAO.updateWithLock()</text>
+
+    <!-- Failure Point -->
+    <rect x="990" y="540" width="260" height="60" fill="#ffccbc" stroke="#d32f2f" class="box" stroke-width="2"/>
+    <text x="1120" y="560" class="small-label" text-anchor="middle" font-weight="bold" fill="#d32f2f">⚠️ FAILURE INJECTION</text>
+    <text x="1120" y="575" class="code" text-anchor="middle" fill="#d32f2f">failureType == "deadlock"</text>
+    <text x="1120" y="587" class="code" text-anchor="middle" fill="#d32f2f">→ reverse lock order</text>
+
+    <!-- Arrow -->
+    <path d="M 1120 600 L 1120 620" class="arrow" marker-end="url(#arrow)"/>
+
+    <!-- DAO -->
+    <rect x="990" y="620" width="260" height="60" fill="#ffe0b2" stroke="#f57c00" class="box"/>
+    <text x="1120" y="640" class="code">KDSOrderDAO.updateWithLock()</text>
+    <text x="1120" y="652" class="code">BEGIN → lock kds_orders</text>
+    <text x="1120" y="664" class="code">→ wait on orders lock</text>
+
+    <!-- Log Signal -->
+    <rect x="990" y="695" width="260" height="30" fill="#fff9c4" stroke="#fbc02d" class="box"/>
+    <text x="1120" y="714" class="small-label" text-anchor="middle" font-style="italic">"DEADLOCK SCENARIO"</text>
+  </g>
+
+  <!-- ========== FLOW 5: CHECKOUT (SSL/DEADLOCK) ========== -->
+  <g id="flow-5">
+    <rect x="1290" y="350" width="280" height="380" fill="#fce4ec" stroke="#c2185b" class="box" stroke-width="2"/>
+    <rect x="1290" y="350" width="280" height="25" fill="#c2185b"/>
+    <text x="1430" y="368" class="label" text-anchor="middle" fill="#fff" font-weight="bold">⑤ CheckoutServlet</text>
+    <text x="1300" y="390" class="small-label" font-weight="bold">POST /checkout (JSON)</text>
+
+    <!-- Servlet -->
+    <rect x="1300" y="405" width="260" height="50" fill="#f8bbd0" stroke="#c2185b" class="box"/>
+    <text x="1430" y="425" class="code">CheckoutServlet.doPost()</text>
+    <text x="1430" y="437" class="code">orderService.createOrder()</text>
+
+    <!-- Arrow -->
+    <path d="M 1430 455 L 1430 475" class="arrow" marker-end="url(#arrow)"/>
+
+    <!-- Service -->
+    <rect x="1300" y="475" width="260" height="50" fill="#f8bbd0" stroke="#c2185b" class="box"/>
+    <text x="1430" y="495" class="code">OrderService.createOrder()</text>
+    <text x="1430" y="507" class="code">orderDAO.createTransaction()</text>
+
+    <!-- Failure Point -->
+    <rect x="1300" y="540" width="260" height="60" fill="#ffccbc" stroke="#d32f2f" class="box" stroke-width="2"/>
+    <text x="1430" y="560" class="small-label" text-anchor="middle" font-weight="bold" fill="#d32f2f">⚠️ FAILURE INJECTION</text>
+    <text x="1430" y="575" class="code" text-anchor="middle" fill="#d32f2f">failureType == "ssl"</text>
+    <text x="1430" y="587" class="code" text-anchor="middle" fill="#d32f2f">→ cert validation fail</text>
+
+    <!-- Arrow -->
+    <path d="M 1430 600 L 1430 620" class="arrow" marker-end="url(#arrow)"/>
+
+    <!-- DAO -->
+    <rect x="1300" y="620" width="260" height="60" fill="#f8bbd0" stroke="#c2185b" class="box"/>
+    <text x="1430" y="640" class="code">OrderDAO.createTransaction()</text>
+    <text x="1430" y="652" class="code">BEGIN → INSERT 3 tables</text>
+    <text x="1430" y="664" class="code">Check SSL → ROLLBACK</text>
+
+    <!-- Log Signal -->
+    <rect x="1300" y="695" width="260" height="30" fill="#fff9c4" stroke="#fbc02d" class="box"/>
+    <text x="1430" y="714" class="small-label" text-anchor="middle" font-style="italic">"SSL Certificate Validation Failed"</text>
+  </g>
+
+  <!-- ========== HIKARICP POOL ========== -->
+  <text x="800" y="780" class="section-title" text-anchor="middle">HikariCP Connection Pool Lifecycle</text>
+
+  <rect x="100" y="810" width="1400" height="80" fill="#e0f2f1" stroke="#00796b" class="box" stroke-width="2"/>
+
+  <text x="120" y="835" class="label" font-weight="bold">Pool Configuration:</text>
+  <text x="120" y="855" class="small-label">• Max Connections: 20 | Min Idle: 5 | Connection Timeout: 30s</text>
+  <text x="120" y="870" class="small-label">• Connection Lifecycle: getConnection() → execute → close() → return to idle pool</text>
+
+  <text x="900" y="835" class="label" font-weight="bold">Pool States:</text>
+  <text x="900" y="855" class="small-label">1. Idle (Available) | 2. Active (In Use) | 3. Waiting (Queue) | 4. Exhausted (DB_LEAK)</text>
+
+  <!-- ========== FAILURE SUMMARY TABLE ========== -->
+  <text x="800" y="950" class="section-title" text-anchor="middle">Failure Injection Points Summary</text>
+
+  <rect x="50" y="980" width="1500" height="420" fill="#fff8e1" stroke="#fbc02d" class="box" stroke-width="2"/>
+
+  <!-- Column Headers -->
+  <rect x="60" y="990" width="220" height="25" fill="#fbc02d"/>
+  <text x="170" y="1009" class="label" text-anchor="middle" font-weight="bold" fill="#fff">Failure Type</text>
+
+  <rect x="280" y="990" width="200" height="25" fill="#fbc02d"/>
+  <text x="380" y="1009" class="label" text-anchor="middle" font-weight="bold" fill="#fff">Endpoint</text>
+
+  <rect x="480" y="990" width="180" height="25" fill="#fbc02d"/>
+  <text x="570" y="1009" class="label" text-anchor="middle" font-weight="bold" fill="#fff">HTTP Trigger</text>
+
+  <rect x="660" y="990" width="240" height="25" fill="#fbc02d"/>
+  <text x="780" y="1009" class="label" text-anchor="middle" font-weight="bold" fill="#fff">Root Cause</text>
+
+  <rect x="900" y="990" width="250" height="25" fill="#fbc02d"/>
+  <text x="1025" y="1009" class="label" text-anchor="middle" font-weight="bold" fill="#fff">Log Signal</text>
+
+  <rect x="1150" y="990" width="400" height="25" fill="#fbc02d"/>
+  <text x="1350" y="1009" class="label" text-anchor="middle" font-weight="bold" fill="#fff">What Reader Looks For</text>
+
+  <!-- Row 1: LDAP_TIMEOUT -->
+  <line x1="60" y1="1015" x2="1550" y2="1015" stroke="#ccc" stroke-width="1"/>
+  <text x="170" y="1035" class="small-label" text-anchor="middle" font-weight="bold">LDAP_TIMEOUT</text>
+  <text x="380" y="1035" class="small-label" text-anchor="middle">/login</text>
+  <text x="570" y="1035" class="small-label" text-anchor="middle">?failureType=ldap_timeout</text>
+  <text x="780" y="1035" class="small-label" text-anchor="middle">LDAP unavailable</text>
+  <text x="1025" y="1035" class="code" text-anchor="middle">"LDAP Failure Injection"</text>
+  <text x="1350" y="1035" class="small-label" text-anchor="middle">Communication exceptions</text>
+
+  <!-- Row 2: DB_LEAK -->
+  <line x1="60" y1="1060" x2="1550" y2="1060" stroke="#ccc" stroke-width="1"/>
+  <text x="170" y="1080" class="small-label" text-anchor="middle" font-weight="bold">DB_LEAK</text>
+  <text x="380" y="1080" class="small-label" text-anchor="middle">/api/menu</text>
+  <text x="570" y="1080" class="small-label" text-anchor="middle">?failureType=db_leak</text>
+  <text x="780" y="1080" class="small-label" text-anchor="middle">Connection not closed</text>
+  <text x="1025" y="1080" class="code" text-anchor="middle">"Cannot get a connection"</text>
+  <text x="1350" y="1080" class="small-label" text-anchor="middle">Pool exhaustion, timeout</text>
+
+  <!-- Row 3: OOM -->
+  <line x1="60" y1="1105" x2="1550" y2="1105" stroke="#ccc" stroke-width="1"/>
+  <text x="170" y="1125" class="small-label" text-anchor="middle" font-weight="bold">OOM</text>
+  <text x="380" y="1125" class="small-label" text-anchor="middle">/api/analytics</text>
+  <text x="570" y="1125" class="small-label" text-anchor="middle">?action=all-time&amp;oom</text>
+  <text x="780" y="1125" class="small-label" text-anchor="middle">10K rows in memory</text>
+  <text x="1025" y="1125" class="code" text-anchor="middle">"OutOfMemoryError"</text>
+  <text x="1350" y="1125" class="small-label" text-anchor="middle">Heap space exceeded</text>
+
+  <!-- Row 4: DEADLOCK -->
+  <line x1="60" y1="1150" x2="1550" y2="1150" stroke="#ccc" stroke-width="1"/>
+  <text x="170" y="1170" class="small-label" text-anchor="middle" font-weight="bold">DEADLOCK</text>
+  <text x="380" y="1170" class="small-label" text-anchor="middle">/api/kds (KDS/Checkout)</text>
+  <text x="570" y="1170" class="small-label" text-anchor="middle">{failureType: deadlock}</text>
+  <text x="780" y="1170" class="small-label" text-anchor="middle">Reverse lock order</text>
+  <text x="1025" y="1170" class="code" text-anchor="middle">"deadlock detected"</text>
+  <text x="1350" y="1170" class="small-label" text-anchor="middle">Thread dump, lock wait</text>
+
+  <!-- Row 5: SSL -->
+  <line x1="60" y1="1195" x2="1550" y2="1195" stroke="#ccc" stroke-width="1"/>
+  <text x="170" y="1215" class="small-label" text-anchor="middle" font-weight="bold">SSL</text>
+  <text x="380" y="1215" class="small-label" text-anchor="middle">/checkout</text>
+  <text x="570" y="1215" class="small-label" text-anchor="middle">{failureType: ssl}</text>
+  <text x="780" y="1215" class="small-label" text-anchor="middle">Cert validation fails</text>
+  <text x="1025" y="1215" class="code" text-anchor="middle">"SSL Certificate Failed"</text>
+  <text x="1350" y="1215" class="small-label" text-anchor="middle">TLS exceptions, rollback</text>
+
+  <!-- Row 6: Healthy Path -->
+  <line x1="60" y1="1240" x2="1550" y2="1240" stroke="#ccc" stroke-width="1"/>
+  <text x="170" y="1260" class="small-label" text-anchor="middle" font-weight="bold">NORMAL</text>
+  <text x="380" y="1260" class="small-label" text-anchor="middle">Any endpoint</text>
+  <text x="570" y="1260" class="small-label" text-anchor="middle">(no failureType)</text>
+  <text x="780" y="1260" class="small-label" text-anchor="middle">Healthy execution</text>
+  <text x="1025" y="1260" class="code" text-anchor="middle">No failure logs</text>
+  <text x="1350" y="1260" class="small-label" text-anchor="middle">Request completes OK</text>
+</svg>

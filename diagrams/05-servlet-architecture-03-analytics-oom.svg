@@ -1,0 +1,171 @@
+<svg viewBox="0 0 1000 1550" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .title { font-size: 24px; font-weight: bold; fill: #1a1a1a; }
+      .subtitle { font-size: 14px; fill: #666; }
+      .section-title { font-size: 13px; font-weight: bold; fill: #1a1a1a; }
+      .label { font-size: 12px; fill: #333; }
+      .small-label { font-size: 11px; fill: #666; }
+      .code { font-family: monospace; font-size: 11px; fill: #333; }
+      .box { stroke-width: 2; rx: 3; }
+      .arrow { stroke-width: 2; fill: none; }
+      .failure-text { font-size: 11px; font-weight: bold; fill: #d32f2f; }
+    </style>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#333"/>
+    </marker>
+    <marker id="arrow-red" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#d32f2f"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1000" height="1550" fill="#f8f9fa"/>
+
+  <!-- Header -->
+  <text x="500" y="40" class="title" text-anchor="middle">Use Case 3: Out-of-Memory (OOM) Heap Exhaustion</text>
+  <text x="500" y="65" class="subtitle" text-anchor="middle">Unbounded Query Loading All Events into Memory</text>
+
+  <!-- ========== REQUEST OVERVIEW ========== -->
+  <text x="50" y="110" class="section-title">Request Details</text>
+
+  <rect x="50" y="125" width="900" height="100" fill="#e8f5e9" stroke="#388e3c" class="box"/>
+
+  <text x="70" y="150" class="label" font-weight="bold">Endpoint:</text>
+  <text x="250" y="150" class="code">GET /bytebite/api/analytics</text>
+
+  <text x="70" y="175" class="label" font-weight="bold">Trigger:</text>
+  <text x="250" y="175" class="code">?action=all-time-report&amp;failureType=oom</text>
+
+  <text x="70" y="200" class="label" font-weight="bold">What Happens:</text>
+  <text x="250" y="200" class="small-label">Query returns 10K+ analytics_events rows (unbounded fetch)</text>
+  <text x="250" y="218" class="small-label">Each row loaded into memory (500KB-1MB) → heap spikes</text>
+
+  <!-- ========== EXECUTION FLOW ========== -->
+  <text x="50" y="280" class="section-title">Execution Flow with Failure Point</text>
+
+  <!-- Step 1: HTTP Request -->
+  <rect x="100" y="310" width="800" height="55" fill="#e3f2fd" stroke="#1976d2" class="box"/>
+  <text x="115" y="330" class="label" font-weight="bold">① HTTP Request</text>
+  <text x="115" y="350" class="code">GET /api/analytics?action=all-time-report&amp;failureType=oom</text>
+
+  <!-- Arrow -->
+  <path d="M 500 365 L 500 395" class="arrow" marker-end="url(#arrow)"/>
+
+  <!-- Step 2: Filter Chain -->
+  <rect x="100" y="395" width="800" height="55" fill="#fff3e0" stroke="#f57c00" class="box"/>
+  <text x="115" y="415" class="label" font-weight="bold">② Filter Chain</text>
+  <text x="115" y="435" class="code">RequestLoggingFilter → CORS → Router</text>
+
+  <!-- Arrow -->
+  <path d="M 500 450 L 500 480" class="arrow" marker-end="url(#arrow)"/>
+
+  <!-- Step 3: Servlet -->
+  <rect x="100" y="480" width="800" height="70" fill="#d0efd4" stroke="#388e3c" class="box"/>
+  <text x="115" y="500" class="label" font-weight="bold">③ AnalyticsServlet.doGet()</text>
+  <text x="115" y="522" class="code">Check action=all-time-report</text>
+  <text x="115" y="540" class="code">→ analyticsService.generateAllTimeReport()</text>
+
+  <!-- Arrow -->
+  <path d="M 500 550 L 500 580" class="arrow" marker-end="url(#arrow)"/>
+
+  <!-- Step 4: Service -->
+  <rect x="100" y="580" width="800" height="70" fill="#d0efd4" stroke="#388e3c" class="box"/>
+  <text x="115" y="600" class="label" font-weight="bold">④ AnalyticsService.generateAllTimeReport()</text>
+  <text x="115" y="622" class="code">analyticsDAO.getAllEvents()</text>
+  <text x="115" y="640" class="code">→ Convert to List&lt;Map&gt; for JSON serialization</text>
+
+  <!-- Arrow -->
+  <path d="M 500 650 L 500 680" class="arrow" marker-end="url(#arrow)"/>
+
+  <!-- Step 5: DAO - Query Execution -->
+  <rect x="100" y="680" width="800" height="70" fill="#d0efd4" stroke="#388e3c" class="box"/>
+  <text x="115" y="700" class="label" font-weight="bold">⑤ AnalyticsDAO.getAllEvents()</text>
+  <text x="115" y="722" class="code">SELECT * FROM analytics_events (NO LIMIT)</text>
+  <text x="115" y="740" class="code">ResultSet: 10,000+ rows returned</text>
+
+  <!-- Arrow -->
+  <path d="M 500 750 L 500 780" class="arrow" marker-end="url(#arrow)"/>
+
+  <!-- FAILURE POINT -->
+  <rect x="50" y="780" width="900" height="150" fill="#ffccbc" stroke="#d32f2f" class="box" stroke-width="3"/>
+  <rect x="50" y="780" width="900" height="30" fill="#d32f2f"/>
+  <text x="500" y="803" class="label" text-anchor="middle" fill="#fff" font-weight="bold">⚠️ FAILURE INJECTION POINT</text>
+
+  <text x="70" y="830" class="failure-text">failureType == "oom" triggers:</text>
+  <text x="85" y="855" class="code">→ Load ALL 10K events into List&lt;AnalyticsEvent&gt;</text>
+  <text x="85" y="873" class="code">→ Each event: ~100-150 bytes × 10K rows = 1-1.5 MB baseline</text>
+  <text x="85" y="891" class="code">→ Pagination/caching SKIPPED</text>
+  <text x="85" y="909" class="code">→ Memory pressure on JVM heap (max 512m)</text>
+
+  <!-- Arrow -->
+  <path d="M 500 930 L 500 960" class="arrow-red" marker-end="url(#arrow-red)"/>
+
+  <!-- Heap Exhaustion -->
+  <rect x="100" y="960" width="800" height="80" fill="#ffcccc" stroke="#d32f2f" class="box"/>
+  <text x="115" y="980" class="label" font-weight="bold">⑥ Heap Memory Exhaustion</text>
+  <text x="115" y="1002" class="code">JVM: heap usage 400m → 490m → 512m (MAX)</text>
+  <text x="115" y="1020" class="code">GC attempts: Full GC cycles every few milliseconds</text>
+  <text x="115" y="1038" class="code">"java.lang.OutOfMemoryError: Java heap space"</text>
+
+  <!-- Arrow -->
+  <path d="M 500 1040 L 500 1070" class="arrow" marker-end="url(#arrow)"/>
+
+  <!-- Step 7: Response -->
+  <rect x="100" y="1070" width="800" height="55" fill="#f5f5f5" stroke="#666" class="box"/>
+  <text x="115" y="1090" class="label" font-weight="bold">⑦ HTTP 500 / OutOfMemoryError Response</text>
+  <text x="115" y="1110" class="code">Tomcat cannot even send response; servlet dies</text>
+
+  <!-- ========== HEAP PRESSURE TIMELINE ========== -->
+  <text x="50" y="1170" class="section-title">Heap Usage Timeline</text>
+
+  <rect x="50" y="1190" width="900" height="210" fill="#e8f5e9" stroke="#388e3c" class="box" stroke-width="2"/>
+
+  <!-- Heap Bars -->
+  <text x="70" y="1215" class="small-label" font-weight="bold">JVM Heap: max=512MB | Baseline (idle)=100MB</text>
+
+  <!-- Time 1 -->
+  <rect x="70" y="1235" width="100" height="25" fill="#c8e6c9" stroke="#388e3c" class="box"/>
+  <text x="120" y="1252" class="code">Query starts</text>
+  <text x="200" y="1252" class="small-label">100MB (idle)</text>
+
+  <!-- Time 2 -->
+  <rect x="70" y="1270" width="300" height="25" fill="#ffeb3b" stroke="#f57c00" class="box"/>
+  <text x="220" y="1287" class="code">1K events loaded</text>
+  <text x="380" y="1287" class="small-label">200MB (warming)</text>
+
+  <!-- Time 3 -->
+  <rect x="70" y="1305" width="500" height="25" fill="#ff9800" stroke="#f57c00" class="box"/>
+  <text x="320" y="1322" class="code">5K events loaded</text>
+  <text x="580" y="1322" class="small-label">350MB (high)</text>
+
+  <!-- Time 4 -->
+  <rect x="70" y="1340" width="850" height="25" fill="#d32f2f" stroke="#d32f2f" class="box"/>
+  <text x="500" y="1357" class="code" fill="#fff">10K events → OOM!</text>
+
+  <!-- ========== DIAGNOSTIC SIGNALS ========== -->
+  <text x="50" y="1450" class="section-title">What to Look For in catalina.log</text>
+
+  <rect x="50" y="1470" width="900" height="300" fill="#fff9c4" stroke="#fbc02d" class="box" stroke-width="2"/>
+
+  <text x="70" y="1495" class="label" font-weight="bold">Log Signals:</text>
+
+  <rect x="70" y="1515" width="860" height="50" fill="#fff" stroke="#fbc02d" class="box"/>
+  <text x="85" y="1535" class="code" font-weight="bold">"⚠️ OOM FAILURE INJECTION: Loading 10K events"</text>
+  <text x="85" y="1555" class="small-label">Line 96 in AnalyticsServlet.java when failureType=oom</text>
+
+  <rect x="70" y="1575" width="860" height="50" fill="#fff" stroke="#fbc02d" class="box"/>
+  <text x="85" y="1595" class="code" font-weight="bold">"java.lang.OutOfMemoryError: Java heap space"</text>
+  <text x="85" y="1615" class="small-label">Stack trace shows allocation during event processing</text>
+
+  <rect x="70" y="1635" width="860" height="50" fill="#fff" stroke="#fbc02d" class="box"/>
+  <text x="85" y="1655" class="code" font-weight="bold">GC logs: "[Full GC... freed NMB, X% memory]"</text>
+  <text x="85" y="1675" class="small-label">Multiple rapid GC cycles indicate heap pressure spike</text>
+
+  <rect x="70" y="1695" width="860" height="50" fill="#fff" stroke="#fbc02d" class="box"/>
+  <text x="85" y="1715" class="code" font-weight="bold">Tomcat process: thread dump shows all threads blocked</text>
+  <text x="85" y="1735" class="small-label">jstack output: "Java heap space" in many stack traces</text>
+
+  <!-- Footer -->
+  <text x="500" y="1850" class="small-label" text-anchor="middle" font-style="italic">Use this diagram to trace unbounded query memory failures in book chapter on heap management</text>
+</svg>

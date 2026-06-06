@@ -1,0 +1,243 @@
+<svg viewBox="0 0 1400 1100" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .title { font-size: 28px; font-weight: bold; fill: #1a1a1a; }
+      .section-title { font-size: 16px; font-weight: bold; fill: #1a1a1a; }
+      .label { font-size: 12px; fill: #333; }
+      .small-label { font-size: 11px; fill: #666; }
+      .box-header { font-size: 13px; font-weight: bold; }
+      .flow-box { stroke-width: 2; rx: 5; }
+      .arrow { stroke-width: 2; fill: none; }
+    </style>
+    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#333"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1400" height="1100" fill="#f8f9fa"/>
+
+  <!-- Title -->
+  <text x="700" y="35" class="title" text-anchor="middle">ByteBite Request &amp; Session Flow</text>
+  <text x="700" y="60" font-size="14" text-anchor="middle" fill="#666">HTTP Lifecycle &amp; Database Interactions</text>
+
+  <!-- ========== REQUEST FILTER CHAIN ========== -->
+  <text x="700" y="95" class="section-title" text-anchor="middle">HTTP Request Filter Chain</text>
+
+  <!-- Filter 1 -->
+  <rect x="150" y="110" width="200" height="70" fill="#e3f2fd" stroke="#1976d2" class="flow-box"/>
+  <text x="250" y="135" class="box-header" text-anchor="middle" fill="#1976d2">1. RequestLogging</text>
+  <text x="250" y="153" class="small-label" text-anchor="middle">Logs method, path, IP</text>
+
+  <!-- Filter 2 -->
+  <rect x="380" y="110" width="200" height="70" fill="#f3e5f5" stroke="#7b1fa2" class="flow-box"/>
+  <text x="480" y="135" class="box-header" text-anchor="middle" fill="#7b1fa2">2. LDAP Auth</text>
+  <text x="480" y="153" class="small-label" text-anchor="middle">Validate session</text>
+
+  <!-- Filter 3 -->
+  <rect x="610" y="110" width="200" height="70" fill="#e8f5e9" stroke="#388e3c" class="flow-box"/>
+  <text x="710" y="135" class="box-header" text-anchor="middle" fill="#388e3c">3. CORS + Security</text>
+  <text x="710" y="153" class="small-label" text-anchor="middle">Add headers</text>
+
+  <!-- Filter 4 -->
+  <rect x="840" y="110" width="200" height="70" fill="#fff3e0" stroke="#f57c00" class="flow-box"/>
+  <text x="940" y="135" class="box-header" text-anchor="middle" fill="#f57c00">4. Servlet Route</text>
+  <text x="940" y="153" class="small-label" text-anchor="middle">Dispatcher</text>
+
+  <!-- Filter 5 -->
+  <rect x="1070" y="110" width="200" height="70" fill="#fce4ec" stroke="#c2185b" class="flow-box"/>
+  <text x="1170" y="135" class="box-header" text-anchor="middle" fill="#c2185b">5. Failure Injection</text>
+  <text x="1170" y="153" class="small-label" text-anchor="middle">Chaos testing</text>
+
+  <!-- Arrows between filters -->
+  <path d="M 350 145 L 380 145" class="arrow" marker-end="url(#arrowhead)"/>
+  <path d="M 580 145 L 610 145" class="arrow" marker-end="url(#arrowhead)"/>
+  <path d="M 810 145 L 840 145" class="arrow" marker-end="url(#arrowhead)"/>
+  <path d="M 1040 145 L 1070 145" class="arrow" marker-end="url(#arrowhead)"/>
+
+  <!-- ========== 5 MAJOR FLOWS ========== -->
+  <text x="700" y="220" class="section-title" text-anchor="middle">5 Major Failure Injection Flows</text>
+
+  <!-- FLOW 1: LOGIN -->
+  <g id="flow-login">
+    <rect x="40" y="240" width="250" height="220" fill="#e3f2fd" stroke="#1976d2" class="flow-box" stroke-width="2"/>
+    <text x="165" y="265" class="box-header" text-anchor="middle" fill="#1976d2">① LOGIN Flow</text>
+    <text x="165" y="283" class="small-label" text-anchor="middle" font-weight="bold">POST /login</text>
+
+    <text x="55" y="305" class="small-label" font-weight="bold">Endpoint:</text>
+    <text x="55" y="321" class="small-label">/login (credentials)</text>
+
+    <text x="55" y="345" class="small-label" font-weight="bold">Injection Point:</text>
+    <text x="55" y="361" class="small-label" fill="#d32f2f">LDAP_TIMEOUT</text>
+
+    <text x="55" y="381" class="small-label" font-weight="bold">Database:</text>
+    <text x="55" y="397" class="small-label">SELECT from users</text>
+    <text x="55" y="413" class="small-label">INSERT into sessions</text>
+    <text x="55" y="429" class="small-label">UPDATE last_login</text>
+
+    <text x="55" y="449" class="small-label" font-weight="bold">Log Signal:</text>
+    <text x="55" y="465" class="small-label" font-style="italic">"LDAP timeout"</text>
+  </g>
+
+  <!-- FLOW 2: MENU -->
+  <g id="flow-menu">
+    <rect x="310" y="240" width="250" height="220" fill="#f3e5f5" stroke="#7b1fa2" class="flow-box" stroke-width="2"/>
+    <text x="435" y="265" class="box-header" text-anchor="middle" fill="#7b1fa2">② MENU Flow</text>
+    <text x="435" y="283" class="small-label" text-anchor="middle" font-weight="bold">GET /api/menu</text>
+
+    <text x="325" y="305" class="small-label" font-weight="bold">Endpoint:</text>
+    <text x="325" y="321" class="small-label">/menu (authenticated)</text>
+
+    <text x="325" y="345" class="small-label" font-weight="bold">Injection Point:</text>
+    <text x="325" y="361" class="small-label" fill="#d32f2f">DB_LEAK</text>
+
+    <text x="325" y="381" class="small-label" font-weight="bold">Database:</text>
+    <text x="325" y="397" class="small-label">SELECT menu_items</text>
+    <text x="325" y="413" class="small-label">Don't close connection</text>
+    <text x="325" y="429" class="small-label">Pool exhausts N=20</text>
+
+    <text x="325" y="449" class="small-label" font-weight="bold">Log Signal:</text>
+    <text x="325" y="465" class="small-label" font-style="italic">"Cannot get conn..."</text>
+  </g>
+
+  <!-- FLOW 3: ANALYTICS -->
+  <g id="flow-analytics">
+    <rect x="580" y="240" width="250" height="220" fill="#e8f5e9" stroke="#388e3c" class="flow-box" stroke-width="2"/>
+    <text x="705" y="265" class="box-header" text-anchor="middle" fill="#388e3c">③ ANALYTICS Flow</text>
+    <text x="705" y="283" class="small-label" text-anchor="middle" font-weight="bold">GET /api/analytics?all-time</text>
+
+    <text x="595" y="305" class="small-label" font-weight="bold">Endpoint:</text>
+    <text x="595" y="321" class="small-label">all-time-report</text>
+
+    <text x="595" y="345" class="small-label" font-weight="bold">Injection Point:</text>
+    <text x="595" y="361" class="small-label" fill="#d32f2f">OOM</text>
+
+    <text x="595" y="381" class="small-label" font-weight="bold">Database:</text>
+    <text x="595" y="397" class="small-label">SELECT * analytics</text>
+    <text x="595" y="413" class="small-label">Load 10K rows (~1GB)</text>
+    <text x="595" y="429" class="small-label">Xmx=512m → Error</text>
+
+    <text x="595" y="449" class="small-label" font-weight="bold">Log Signal:</text>
+    <text x="595" y="465" class="small-label" font-style="italic">"OutOfMemoryError"</text>
+  </g>
+
+  <!-- FLOW 4: KDS -->
+  <g id="flow-kds">
+    <rect x="850" y="240" width="250" height="220" fill="#fff3e0" stroke="#f57c00" class="flow-box" stroke-width="2"/>
+    <text x="975" y="265" class="box-header" text-anchor="middle" fill="#f57c00">④ KDS Flow</text>
+    <text x="975" y="283" class="small-label" text-anchor="middle" font-weight="bold">POST /api/kds</text>
+
+    <text x="865" y="305" class="small-label" font-weight="bold">Endpoint:</text>
+    <text x="865" y="321" class="small-label">/kds (order status)</text>
+
+    <text x="865" y="345" class="small-label" font-weight="bold">Injection Point:</text>
+    <text x="865" y="361" class="small-label" fill="#d32f2f">DEADLOCK</text>
+
+    <text x="865" y="381" class="small-label" font-weight="bold">Database:</text>
+    <text x="865" y="397" class="small-label">UPDATE kds_orders</text>
+    <text x="865" y="413" class="small-label">Reverse lock order</text>
+    <text x="865" y="429" class="small-label">Circular wait w/ checkout</text>
+
+    <text x="865" y="449" class="small-label" font-weight="bold">Log Signal:</text>
+    <text x="865" y="465" class="small-label" font-style="italic">"DEADLOCK SCENARIO"</text>
+  </g>
+
+  <!-- FLOW 5: CHECKOUT -->
+  <g id="flow-checkout">
+    <rect x="1120" y="240" width="250" height="220" fill="#fce4ec" stroke="#c2185b" class="flow-box" stroke-width="2"/>
+    <text x="1245" y="265" class="box-header" text-anchor="middle" fill="#c2185b">⑤ CHECKOUT Flow</text>
+    <text x="1245" y="283" class="small-label" text-anchor="middle" font-weight="bold">POST /checkout</text>
+
+    <text x="1135" y="305" class="small-label" font-weight="bold">Endpoint:</text>
+    <text x="1135" y="321" class="small-label">/checkout (order)</text>
+
+    <text x="1135" y="345" class="small-label" font-weight="bold">Injection Point:</text>
+    <text x="1135" y="361" class="small-label" fill="#d32f2f">SSL / DEADLOCK</text>
+
+    <text x="1135" y="381" class="small-label" font-weight="bold">Database:</text>
+    <text x="1135" y="397" class="small-label">INSERT orders</text>
+    <text x="1135" y="413" class="small-label">INSERT order_items</text>
+    <text x="1135" y="429" class="small-label">INSERT kds_orders</text>
+
+    <text x="1135" y="449" class="small-label" font-weight="bold">Log Signal:</text>
+    <text x="1135" y="465" class="small-label" font-style="italic">"SSL Failed" / "Deadlock"</text>
+  </g>
+
+  <!-- ========== SESSION LIFECYCLE ========== -->
+  <text x="700" y="510" class="section-title" text-anchor="middle">Session Lifecycle</text>
+
+  <!-- Session Timeline -->
+  <line x1="100" y1="560" x2="1300" y2="560" stroke="#333" stroke-width="2"/>
+
+  <!-- Session Created -->
+  <circle cx="200" cy="560" r="8" fill="#4caf50" stroke="#333" stroke-width="2"/>
+  <text x="200" y="585" class="label" text-anchor="middle" font-weight="bold">Created</text>
+  <text x="200" y="601" class="small-label" text-anchor="middle">After login</text>
+  <text x="200" y="617" class="small-label" text-anchor="middle">session_id generated</text>
+
+  <!-- Session Active -->
+  <circle cx="600" cy="560" r="8" fill="#2196f3" stroke="#333" stroke-width="2"/>
+  <text x="600" y="585" class="label" text-anchor="middle" font-weight="bold">Active</text>
+  <text x="600" y="601" class="small-label" text-anchor="middle">User requests</text>
+  <text x="600" y="617" class="small-label" text-anchor="middle">token refreshed</text>
+
+  <!-- Session Validated -->
+  <circle cx="1000" cy="560" r="8" fill="#ff9800" stroke="#333" stroke-width="2"/>
+  <text x="1000" y="585" class="label" text-anchor="middle" font-weight="bold">Validated</text>
+  <text x="1000" y="601" class="small-label" text-anchor="middle">Each request checked</text>
+  <text x="1000" y="617" class="small-label" text-anchor="middle">auth filter validates</text>
+
+  <!-- Session Expired -->
+  <circle cx="1250" cy="560" r="8" fill="#f44336" stroke="#333" stroke-width="2"/>
+  <text x="1250" y="585" class="label" text-anchor="middle" font-weight="bold">Expired</text>
+  <text x="1250" y="601" class="small-label" text-anchor="middle">30 min inactivity</text>
+  <text x="1250" y="617" class="small-label" text-anchor="middle">Redirect to login</text>
+
+  <!-- Timeline arrows -->
+  <path d="M 208 560 L 592 560" class="arrow" marker-end="url(#arrowhead)"/>
+  <path d="M 608 560 L 992 560" class="arrow" marker-end="url(#arrowhead)"/>
+  <path d="M 1008 560 L 1242 560" class="arrow" marker-end="url(#arrowhead)"/>
+
+  <!-- ========== TRANSACTION PATTERNS ========== -->
+  <text x="700" y="670" class="section-title" text-anchor="middle">Database Transaction Patterns</text>
+
+  <!-- Transaction Pattern 1 -->
+  <rect x="50" y="690" width="320" height="140" fill="#f0f4c3" stroke="#9ccc65" class="flow-box"/>
+  <text x="210" y="715" class="box-header" text-anchor="middle" fill="#558b2f">Query Pattern</text>
+  <text x="65" y="735" class="small-label" font-weight="bold">Single Query:</text>
+  <text x="65" y="751" class="small-label">getConnection()</text>
+  <text x="65" y="767" class="small-label">PreparedStatement.execute()</text>
+  <text x="65" y="783" class="small-label">close() → return to pool</text>
+  <text x="65" y="805" class="small-label" font-weight="bold">Examples:</text>
+  <text x="65" y="821" class="small-label">Menu fetch, Health check</text>
+
+  <!-- Transaction Pattern 2 -->
+  <rect x="400" y="690" width="320" height="140" fill="#e1bee7" stroke="#ab47bc" class="flow-box"/>
+  <text x="560" y="715" class="box-header" text-anchor="middle" fill="#6a1b9a">Transaction Pattern</text>
+  <text x="415" y="735" class="small-label" font-weight="bold">Multi-Step Transaction:</text>
+  <text x="415" y="751" class="small-label">BEGIN</text>
+  <text x="415" y="767" class="small-label">Multiple INSERT/UPDATE</text>
+  <text x="415" y="783" class="small-label">COMMIT or ROLLBACK</text>
+  <text x="415" y="805" class="small-label" font-weight="bold">Examples:</text>
+  <text x="415" y="821" class="small-label">Order creation, KDS update</text>
+
+  <!-- Transaction Pattern 3 -->
+  <rect x="750" y="690" width="320" height="140" fill="#c8e6c9" stroke="#43a047" class="flow-box"/>
+  <text x="910" y="715" class="box-header" text-anchor="middle" fill="#1b5e20">Lock Pattern</text>
+  <text x="765" y="735" class="small-label" font-weight="bold">Row-Level Locks:</text>
+  <text x="765" y="751" class="small-label">FOR UPDATE clause</text>
+  <text x="765" y="767" class="small-label">Prevents concurrent writes</text>
+  <text x="765" y="783" class="small-label">Can cause deadlock</text>
+  <text x="765" y="805" class="small-label" font-weight="bold">Risk:</text>
+  <text x="765" y="821" class="small-label">Circular waits (KDS ↔ Checkout)</text>
+
+  <!-- Transaction Pattern 4 -->
+  <rect x="1100" y="690" width="280" height="140" fill="#ffccbc" stroke="#ff7043" class="flow-box"/>
+  <text x="1240" y="715" class="box-header" text-anchor="middle" fill="#bf360c">Leak Pattern</text>
+  <text x="1115" y="735" class="small-label" font-weight="bold">Connection Leak:</text>
+  <text x="1115" y="751" class="small-label">getConnection()</text>
+  <text x="1115" y="767" class="small-label">Execute query</text>
+  <text x="1115" y="783" class="small-label">DON'T close()</text>
+  <text x="1115" y="805" class="small-label" font-weight="bold">Result:</text>
+  <text x="1115" y="821" class="small-label">Pool exhaustion N=20</text>
+</svg>

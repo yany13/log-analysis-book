@@ -1,0 +1,118 @@
+# Book Project .gitignore
+
+# Backup files
+*.backup.*
+*.bak
+*.tmp
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+*.swp
+*~
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# Editor/IDE
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+*~
+.vim/
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Python (if used for documentation generation)
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv
+
+# Node (if used for documentation generation)
+node_modules/
+npm-debug.log
+package-lock.json
+
+# Build artifacts
+dist/
+build/
+*.epub
+*.pdf
+*.mobi
+*.html (except intentional exports)
+
+# Temporary files
+*.swp
+*.swo
+*~
+.#*
+\#*#
+
+# Dependencies
+/node_modules
+/venv
+/.Python
+
+# Generated files (but keep diagrams)
+# Exclude ONLY intermediate build files, not final diagrams
+
+# Keep: ✓ SVG diagrams
+# Keep: ✓ Markdown chapters
+# Keep: ✓ CLAUDE.md and configuration
+
+# Exclude: Word documents in progress
+~$*.docx
+*.docx.bak
+
+# Exclude: Temporary chapter drafts
+draft_*
+temp_*
+WIP_*
+
+# Project-specific exclusions
+.env
+.env.local
+credentials.json
+secrets/
+
+# Generated documentation (regenerated from source)
+generated/
+_site/
+
+# IDE-specific files
+.vscode/settings.json
+.idea/
+*.code-workspace
+
+# Logs
+logs/
+*.log
+
+# Archives (except intentional book exports)
+*.zip
+*.tar
+*.tar.gz
+*.rar
+
+# Don't track backup files
+CLAUDE.md.backup.*
+README.md.backup.*
+MAINTENANCE.md.backup.*
+
+# Don't track generated outputs (users generate these locally)
+output/
+exports/
+builds/

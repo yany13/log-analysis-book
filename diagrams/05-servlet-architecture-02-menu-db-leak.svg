@@ -1,0 +1,165 @@
+<svg viewBox="0 0 1000 1500" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .title { font-size: 24px; font-weight: bold; fill: #1a1a1a; }
+      .subtitle { font-size: 14px; fill: #666; }
+      .section-title { font-size: 13px; font-weight: bold; fill: #1a1a1a; }
+      .label { font-size: 12px; fill: #333; }
+      .small-label { font-size: 11px; fill: #666; }
+      .code { font-family: monospace; font-size: 11px; fill: #333; }
+      .box { stroke-width: 2; rx: 3; }
+      .arrow { stroke-width: 2; fill: none; }
+      .failure-text { font-size: 11px; font-weight: bold; fill: #d32f2f; }
+    </style>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#333"/>
+    </marker>
+    <marker id="arrow-red" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#d32f2f"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1000" height="1500" fill="#f8f9fa"/>
+
+  <!-- Header -->
+  <text x="500" y="40" class="title" text-anchor="middle">Use Case 2: Database Connection Leak</text>
+  <text x="500" y="65" class="subtitle" text-anchor="middle">HikariCP Pool Exhaustion via Unclosed Connection</text>
+
+  <!-- ========== REQUEST OVERVIEW ========== -->
+  <text x="50" y="110" class="section-title">Request Details</text>
+
+  <rect x="50" y="125" width="900" height="100" fill="#f3e5f5" stroke="#7b1fa2" class="box"/>
+
+  <text x="70" y="150" class="label" font-weight="bold">Endpoint:</text>
+  <text x="250" y="150" class="code">GET /bytebite/api/menu</text>
+
+  <text x="70" y="175" class="label" font-weight="bold">Trigger:</text>
+  <text x="250" y="175" class="code">curl "http://localhost:8080/bytebite/api/menu?failureType=db_leak"</text>
+
+  <text x="70" y="200" class="label" font-weight="bold">What Happens:</text>
+  <text x="250" y="200" class="small-label">Connection retrieved from HikariCP pool is NOT returned</text>
+  <text x="250" y="218" class="small-label">Pool exhausts after 20 requests (max pool size)</text>
+
+  <!-- ========== EXECUTION FLOW ========== -->
+  <text x="50" y="280" class="section-title">Execution Flow with Failure Point</text>
+
+  <!-- Step 1: HTTP Request -->
+  <rect x="100" y="310" width="800" height="55" fill="#e3f2fd" stroke="#1976d2" class="box"/>
+  <text x="115" y="330" class="label" font-weight="bold">① HTTP Request</text>
+  <text x="115" y="350" class="code">GET /api/menu?failureType=db_leak</text>
+
+  <!-- Arrow -->
+  <path d="M 500 365 L 500 395" class="arrow" marker-end="url(#arrow)"/>
+
+  <!-- Step 2: Filter Chain -->
+  <rect x="100" y="395" width="800" height="55" fill="#fff3e0" stroke="#f57c00" class="box"/>
+  <text x="115" y="415" class="label" font-weight="bold">② Filter Chain</text>
+  <text x="115" y="435" class="code">RequestLoggingFilter → no auth required for this endpoint</text>
+
+  <!-- Arrow -->
+  <path d="M 500 450 L 500 480" class="arrow" marker-end="url(#arrow)"/>
+
+  <!-- Step 3: Servlet -->
+  <rect x="100" y="480" width="800" height="70" fill="#f0e8f7" stroke="#7b1fa2" class="box"/>
+  <text x="115" y="500" class="label" font-weight="bold">③ MenuServlet.doGet()</text>
+  <text x="115" y="522" class="code">menuServlet.getMenuItems()</text>
+  <text x="115" y="540" class="code">→ menuService.getMenuItems()</text>
+
+  <!-- Arrow -->
+  <path d="M 500 550 L 500 580" class="arrow" marker-end="url(#arrow)"/>
+
+  <!-- Step 4: Service -->
+  <rect x="100" y="580" width="800" height="70" fill="#f0e8f7" stroke="#7b1fa2" class="box"/>
+  <text x="115" y="600" class="label" font-weight="bold">④ MenuService.getMenuItems()</text>
+  <text x="115" y="622" class="code">menuDAO.getAllAvailable()</text>
+  <text x="115" y="640" class="code">→ Get connection from HikariCP pool</text>
+
+  <!-- Arrow -->
+  <path d="M 500 650 L 500 680" class="arrow" marker-end="url(#arrow)"/>
+
+  <!-- Step 5: DAO - Connection Retrieval -->
+  <rect x="100" y="680" width="800" height="70" fill="#f0e8f7" stroke="#7b1fa2" class="box"/>
+  <text x="115" y="700" class="label" font-weight="bold">⑤ MenuDAO.getAllAvailable()</text>
+  <text x="115" y="722" class="code">Connection conn = HikariCP.getConnection()</text>
+  <text x="115" y="740" class="code">PreparedStatement: SELECT * FROM menu_items</text>
+
+  <!-- Arrow -->
+  <path d="M 500 750 L 500 780" class="arrow" marker-end="url(#arrow)"/>
+
+  <!-- FAILURE POINT -->
+  <rect x="50" y="780" width="900" height="150" fill="#ffccbc" stroke="#d32f2f" class="box" stroke-width="3"/>
+  <rect x="50" y="780" width="900" height="30" fill="#d32f2f"/>
+  <text x="500" y="803" class="label" text-anchor="middle" fill="#fff" font-weight="bold">⚠️ FAILURE INJECTION POINT</text>
+
+  <text x="70" y="830" class="failure-text">failureType == "db_leak" triggers:</text>
+  <text x="85" y="855" class="code">→ Query executes successfully</text>
+  <text x="85" y="873" class="code">→ Results returned to MenuService</text>
+  <text x="85" y="891" class="code">→ BUT: conn.close() is SKIPPED (connection leak!)</text>
+  <text x="85" y="909" class="code">→ Connection stays in HikariCP "active" pool</text>
+
+  <!-- Arrow -->
+  <path d="M 500 930 L 500 960" class="arrow-red" marker-end="url(#arrow-red)"/>
+
+  <!-- Pool Exhaustion -->
+  <rect x="100" y="960" width="800" height="70" fill="#ffcccc" stroke="#d32f2f" class="box"/>
+  <text x="115" y="980" class="label" font-weight="bold">⑥ HikariCP Pool Exhausted (21st request)</text>
+  <text x="115" y="1002" class="code">Request 21: HikariCP.getConnection() → TIMEOUT</text>
+  <text x="115" y="1020" class="code">"Cannot get a connection, pool error..." logged</text>
+
+  <!-- Arrow -->
+  <path d="M 500 1030 L 500 1060" class="arrow" marker-end="url(#arrow)"/>
+
+  <!-- Step 7: Response -->
+  <rect x="100" y="1060" width="800" height="55" fill="#f5f5f5" stroke="#666" class="box"/>
+  <text x="115" y="1080" class="label" font-weight="bold">⑦ HTTP 500 / Pool Error Response</text>
+  <text x="115" y="1100" class="code">JSON: { error: "Database connection pool exhausted" }</text>
+
+  <!-- ========== HIKARICP POOL LIFECYCLE ========== -->
+  <text x="50" y="1170" class="section-title">HikariCP Pool States During Leak</text>
+
+  <rect x="50" y="1190" width="900" height="230" fill="#e0f2f1" stroke="#00796b" class="box" stroke-width="2"/>
+
+  <text x="70" y="1215" class="label" font-weight="bold">Pool Configuration: max=20, min_idle=5, timeout=30s</text>
+
+  <!-- Timeline -->
+  <rect x="70" y="1240" width="200" height="50" fill="#c8e6c9" stroke="#388e3c" class="box"/>
+  <text x="170" y="1260" class="small-label" text-anchor="middle" font-weight="bold">Request 1-20</text>
+  <text x="170" y="1280" class="code" text-anchor="middle">20 connections active</text>
+
+  <rect x="290" y="1240" width="200" height="50" fill="#ffccbc" stroke="#d32f2f" class="box"/>
+  <text x="390" y="1260" class="small-label" text-anchor="middle" font-weight="bold">Request 21 (LEAK)</text>
+  <text x="390" y="1280" class="code" text-anchor="middle">Timeout waiting for free</text>
+
+  <rect x="510" y="1240" width="200" height="50" fill="#ffccbc" stroke="#d32f2f" class="box"/>
+  <text x="610" y="1260" class="small-label" text-anchor="middle" font-weight="bold">Subsequent Requests</text>
+  <text x="610" y="1280" class="code" text-anchor="middle">Queue up, all timeout</text>
+
+  <!-- Impact -->
+  <text x="70" y="1320" class="small-label" font-weight="bold">Impact:</text>
+  <text x="85" y="1340" class="small-label">• First 20 requests: slow (connections not returned)</text>
+  <text x="85" y="1360" class="small-label">• 21st+ requests: immediate timeout (pool empty)</text>
+  <text x="85" y="1380" class="small-label">• Restart Tomcat to reset pool state</text>
+
+  <!-- ========== DIAGNOSTIC SIGNALS ========== -->
+  <text x="50" y="1450" class="section-title">What to Look For in catalina.log</text>
+
+  <rect x="50" y="1470" width="900" height="280" fill="#fff9c4" stroke="#fbc02d" class="box" stroke-width="2"/>
+
+  <text x="70" y="1495" class="label" font-weight="bold">Log Signals (appear on request 21+):</text>
+
+  <rect x="70" y="1515" width="860" height="50" fill="#fff" stroke="#fbc02d" class="box"/>
+  <text x="85" y="1535" class="code" font-weight="bold">"Cannot get a connection, pool error ..."</text>
+  <text x="85" y="1555" class="small-label">HikariCP throws PoolInitializationException</text>
+
+  <rect x="70" y="1575" width="860" height="50" fill="#fff" stroke="#fbc02d" class="box"/>
+  <text x="85" y="1595" class="code" font-weight="bold">"Connection leak scenario: connection not closed"</text>
+  <text x="85" y="1615" class="small-label">Custom message from MenuDAO when failureType=db_leak</text>
+
+  <rect x="70" y="1635" width="860" height="50" fill="#fff" stroke="#fbc02d" class="box"/>
+  <text x="85" y="1655" class="code" font-weight="bold">HikariCP DEBUG: "Connection add to pool"</text>
+  <text x="85" y="1675" class="small-label">Monitor concurrent active connections from logs</text>
+
+  <!-- Footer -->
+  <text x="500" y="1750" class="small-label" text-anchor="middle" font-style="italic">Use this diagram to trace connection pool exhaustion failures in book chapter on resource leaks</text>
+</svg>

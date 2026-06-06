@@ -1,0 +1,284 @@
+<svg viewBox="0 0 1000 1400" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .folder { fill: #FFA500; stroke: #333; stroke-width: 1.5; }
+      .file { fill: #87CEEB; stroke: #333; stroke-width: 1.5; }
+      .package { fill: #90EE90; stroke: #333; stroke-width: 1.5; }
+      .text-root { font-family: Arial, sans-serif; font-size: 14px; font-weight: bold; }
+      .text-folder { font-family: Arial, sans-serif; font-size: 12px; font-weight: bold; }
+      .text-file { font-family: Arial, sans-serif; font-size: 11px; }
+      .text-package { font-family: Arial, sans-serif; font-size: 10px; }
+      .line { stroke: #666; stroke-width: 1; fill: none; }
+    </style>
+  </defs>
+
+  <!-- Title -->
+  <text x="500" y="30" text-anchor="middle" class="text-root" font-size="18">ByteBite Project Structure</text>
+
+  <!-- Root folder -->
+  <rect x="20" y="50" width="30" height="25" class="folder"/>
+  <text x="60" y="70" class="text-root">log-analysis-ai-usecase-app/</text>
+
+  <!-- Main sections connectors and folders -->
+  <!-- src folder -->
+  <line x1="45" y1="75" x2="45" y2="110" class="line"/>
+  <line x1="45" y1="110" x2="80" y2="110" class="line"/>
+  <rect x="80" y="100" width="25" height="20" class="folder"/>
+  <text x="110" y="117" class="text-folder">src/</text>
+
+  <!-- docker folder -->
+  <line x1="45" y1="75" x2="45" y2="160" class="line"/>
+  <line x1="45" y1="160" x2="80" y2="160" class="line"/>
+  <rect x="80" y="150" width="25" height="20" class="folder"/>
+  <text x="110" y="167" class="text-folder">docker/</text>
+
+  <!-- docs folder -->
+  <line x1="45" y1="75" x2="45" y2="210" class="line"/>
+  <line x1="45" y1="210" x2="80" y2="210" class="line"/>
+  <rect x="80" y="200" width="25" height="20" class="folder"/>
+  <text x="110" y="217" class="text-folder">docs/</text>
+
+  <!-- scripts folder -->
+  <line x1="45" y1="75" x2="45" y2="260" class="line"/>
+  <line x1="45" y1="260" x2="80" y2="260" class="line"/>
+  <rect x="80" y="250" width="25" height="20" class="folder"/>
+  <text x="110" y="267" class="text-folder">scripts/</text>
+
+  <!-- .github folder -->
+  <line x1="45" y1="75" x2="45" y2="310" class="line"/>
+  <line x1="45" y1="310" x2="80" y2="310" class="line"/>
+  <rect x="80" y="300" width="25" height="20" class="folder"/>
+  <text x="110" y="317" class="text-folder">.github/</text>
+
+  <!-- memory folder -->
+  <line x1="45" y1="75" x2="45" y2="360" class="line"/>
+  <line x1="45" y1="360" x2="80" y2="360" class="line"/>
+  <rect x="80" y="350" width="25" height="20" class="folder"/>
+  <text x="110" y="367" class="text-folder">memory/</text>
+
+  <!-- pom.xml -->
+  <line x1="45" y1="75" x2="45" y2="410" class="line"/>
+  <line x1="45" y1="410" x2="80" y2="410" class="line"/>
+  <rect x="80" y="400" width="25" height="20" class="file"/>
+  <text x="110" y="417" class="text-file">pom.xml</text>
+
+  <!-- docker-compose.yml -->
+  <line x1="45" y1="75" x2="45" y2="460" class="line"/>
+  <line x1="45" y1="460" x2="80" y2="460" class="line"/>
+  <rect x="80" y="450" width="25" height="20" class="file"/>
+  <text x="110" y="467" class="text-file">docker-compose.yml</text>
+
+  <!-- README.md -->
+  <line x1="45" y1="75" x2="45" y2="510" class="line"/>
+  <line x1="45" y1="510" x2="80" y2="510" class="line"/>
+  <rect x="80" y="500" width="25" height="20" class="file"/>
+  <text x="110" y="517" class="text-file">README.md</text>
+
+  <!-- CLAUDE.md -->
+  <line x1="45" y1="75" x2="45" y2="560" class="line"/>
+  <line x1="45" y1="560" x2="80" y2="560" class="line"/>
+  <rect x="80" y="550" width="25" height="20" class="file"/>
+  <text x="110" y="567" class="text-file">CLAUDE.md</text>
+
+  <!-- ===== SRC SUBTREE ===== -->
+  <line x1="105" y1="110" x2="105" y2="150" class="line"/>
+  <line x1="105" y1="150" x2="150" y2="150" class="line"/>
+  <rect x="150" y="140" width="25" height="20" class="folder"/>
+  <text x="180" y="157" class="text-folder">main/</text>
+
+  <!-- src/test -->
+  <line x1="105" y1="110" x2="105" y2="190" class="line"/>
+  <line x1="105" y1="190" x2="150" y2="190" class="line"/>
+  <rect x="150" y="180" width="25" height="20" class="folder"/>
+  <text x="180" y="197" class="text-folder">test/</text>
+
+  <!-- src/main subtree -->
+  <line x1="175" y1="150" x2="175" y2="190" class="line"/>
+  <line x1="175" y1="190" x2="220" y2="190" class="line"/>
+  <rect x="220" y="180" width="25" height="20" class="folder"/>
+  <text x="250" y="197" class="text-folder">java/</text>
+
+  <line x1="175" y1="150" x2="175" y2="240" class="line"/>
+  <line x1="175" y1="240" x2="220" y2="240" class="line"/>
+  <rect x="220" y="230" width="25" height="20" class="folder"/>
+  <text x="250" y="247" class="text-folder">resources/</text>
+
+  <line x1="175" y1="150" x2="175" y2="290" class="line"/>
+  <line x1="175" y1="290" x2="220" y2="290" class="line"/>
+  <rect x="220" y="280" width="25" height="20" class="folder"/>
+  <text x="250" y="297" class="text-folder">webapp/</text>
+
+  <!-- src/test/java -->
+  <line x1="175" y1="190" x2="175" y2="340" class="line"/>
+  <line x1="175" y1="340" x2="220" y2="340" class="line"/>
+  <rect x="220" y="330" width="25" height="20" class="folder"/>
+  <text x="250" y="347" class="text-folder">java/</text>
+
+  <!-- java/com/bytebite subtree -->
+  <line x1="245" y1="190" x2="245" y2="220" class="line"/>
+  <line x1="245" y1="220" x2="300" y2="220" class="line"/>
+  <rect x="300" y="210" width="25" height="20" class="folder"/>
+  <text x="330" y="227" class="text-folder">com/bytebite/</text>
+
+  <!-- bytebite packages -->
+  <line x1="325" y1="220" x2="325" y2="260" class="line"/>
+  <line x1="325" y1="260" x2="380" y2="260" class="line"/>
+  <rect x="380" y="250" width="25" height="20" class="package"/>
+  <text x="410" y="267" class="text-package">servlet/</text>
+  <text x="415" y="282" class="text-file" font-size="9">• LoginServlet.java</text>
+  <text x="415" y="297" class="text-file" font-size="9">• MenuServlet.java</text>
+  <text x="415" y="312" class="text-file" font-size="9">• AnalyticsServlet.java</text>
+  <text x="415" y="327" class="text-file" font-size="9">• KDSServlet.java</text>
+  <text x="415" y="342" class="text-file" font-size="9">• CheckoutServlet.java</text>
+  <text x="415" y="357" class="text-file" font-size="9">• HealthServlet.java</text>
+
+  <line x1="325" y1="220" x2="325" y2="370" class="line"/>
+  <line x1="325" y1="370" x2="380" y2="370" class="line"/>
+  <rect x="380" y="360" width="25" height="20" class="package"/>
+  <text x="410" y="377" class="text-package">service/</text>
+  <text x="415" y="392" class="text-file" font-size="9">• UserService.java</text>
+  <text x="415" y="407" class="text-file" font-size="9">• OrderService.java</text>
+  <text x="415" y="422" class="text-file" font-size="9">• AnalyticsService.java</text>
+
+  <line x1="325" y1="220" x2="325" y2="435" class="line"/>
+  <line x1="325" y1="435" x2="380" y2="435" class="line"/>
+  <rect x="380" y="425" width="25" height="20" class="package"/>
+  <text x="410" y="442" class="text-package">filter/</text>
+  <text x="415" y="457" class="text-file" font-size="9">• RequestLoggingFilter.java</text>
+  <text x="415" y="472" class="text-file" font-size="9">• LDAPAuthenticationFilter.java</text>
+  <text x="415" y="487" class="text-file" font-size="9">• CORSFilter.java</text>
+  <text x="415" y="502" class="text-file" font-size="9">• SecurityHeadersFilter.java</text>
+  <text x="415" y="517" class="text-file" font-size="9">• CachedBodyFilter.java</text>
+
+  <line x1="325" y1="220" x2="325" y2="530" class="line"/>
+  <line x1="325" y1="530" x2="380" y2="530" class="line"/>
+  <rect x="380" y="520" width="25" height="20" class="package"/>
+  <text x="410" y="537" class="text-package">util/</text>
+  <text x="415" y="552" class="text-file" font-size="9">• FailureInjectionUtil.java</text>
+  <text x="415" y="567" class="text-file" font-size="9">• Constants.java</text>
+  <text x="415" y="582" class="text-file" font-size="9">• SecurityUtil.java</text>
+  <text x="415" y="597" class="text-file" font-size="9">• DateTimeUtil.java</text>
+  <text x="415" y="612" class="text-file" font-size="9">• PaginationUtil.java</text>
+  <text x="415" y="627" class="text-file" font-size="9">• FilterUtil.java</text>
+  <text x="415" y="642" class="text-file" font-size="9">• JsonResponseUtil.java</text>
+  <text x="415" y="657" class="text-file" font-size="9">• CachedBodyRequest.java</text>
+
+  <line x1="325" y1="220" x2="325" y2="670" class="line"/>
+  <line x1="325" y1="670" x2="380" y2="670" class="line"/>
+  <rect x="380" y="660" width="25" height="20" class="package"/>
+  <text x="410" y="677" class="text-package">config/</text>
+  <text x="415" y="692" class="text-file" font-size="9">• AppInitializationListener.java</text>
+  <text x="415" y="707" class="text-file" font-size="9">• DatabaseConfig.java</text>
+  <text x="415" y="722" class="text-file" font-size="9">• DataSourceInitListener.java</text>
+  <text x="415" y="737" class="text-file" font-size="9">• LDAPConfig.java</text>
+
+  <!-- webapp subtree -->
+  <line x1="245" y1="290" x2="245" y2="770" class="line"/>
+  <line x1="245" y1="770" x2="300" y2="770" class="line"/>
+  <rect x="300" y="760" width="25" height="20" class="folder"/>
+  <text x="330" y="777" class="text-folder">webapp/</text>
+
+  <line x1="325" y1="770" x2="325" y2="800" class="line"/>
+  <line x1="325" y1="800" x2="380" y2="800" class="line"/>
+  <rect x="380" y="790" width="25" height="20" class="folder"/>
+  <text x="410" y="807" class="text-folder">WEB-INF/</text>
+
+  <line x1="325" y1="770" x2="325" y2="850" class="line"/>
+  <line x1="325" y1="850" x2="380" y2="850" class="line"/>
+  <rect x="380" y="840" width="25" height="20" class="folder"/>
+  <text x="410" y="857" class="text-folder">login/</text>
+
+  <line x1="325" y1="770" x2="325" y2="900" class="line"/>
+  <line x1="325" y1="900" x2="380" y2="900" class="line"/>
+  <rect x="380" y="890" width="25" height="20" class="folder"/>
+  <text x="410" y="907" class="text-folder">css/</text>
+
+  <line x1="325" y1="770" x2="325" y2="950" class="line"/>
+  <line x1="325" y1="950" x2="380" y2="950" class="line"/>
+  <rect x="380" y="940" width="25" height="20" class="folder"/>
+  <text x="410" y="957" class="text-folder">js/</text>
+
+  <line x1="325" y1="770" x2="325" y2="1000" class="line"/>
+  <line x1="325" y1="1000" x2="380" y2="1000" class="line"/>
+  <rect x="380" y="990" width="25" height="20" class="folder"/>
+  <text x="410" y="1007" class="text-folder">img/</text>
+
+  <!-- ===== DOCKER SUBTREE ===== -->
+  <line x1="105" y1="160" x2="105" y2="1050" class="line"/>
+  <line x1="105" y1="1050" x2="150" y2="1050" class="line"/>
+  <rect x="150" y="1040" width="25" height="20" class="folder"/>
+  <text x="180" y="1057" class="text-folder">tomcat/</text>
+
+  <line x1="105" y1="160" x2="105" y2="1100" class="line"/>
+  <line x1="105" y1="1100" x2="150" y2="1100" class="line"/>
+  <rect x="150" y="1090" width="25" height="20" class="folder"/>
+  <text x="180" y="1107" class="text-folder">postgres/</text>
+
+  <line x1="105" y1="160" x2="105" y2="1150" class="line"/>
+  <line x1="105" y1="1150" x2="150" y2="1150" class="line"/>
+  <rect x="150" y="1140" width="25" height="20" class="folder"/>
+  <text x="180" y="1157" class="text-folder">openldap/</text>
+
+  <!-- docker/tomcat contents -->
+  <text x="220" y="1072" class="text-file" font-size="9">• logging.properties</text>
+  <text x="220" y="1087" class="text-file" font-size="9">• Dockerfile</text>
+  <text x="220" y="1102" class="text-file" font-size="9">• keystore.jks</text>
+
+  <!-- docker/postgres contents -->
+  <text x="220" y="1122" class="text-file" font-size="9">• init.sql</text>
+  <text x="220" y="1137" class="text-file" font-size="9">• Dockerfile</text>
+
+  <!-- docker/openldap contents -->
+  <text x="220" y="1172" class="text-file" font-size="9">• ldif_files/</text>
+
+  <!-- Legend -->
+  <g transform="translate(620, 50)">
+    <text x="0" y="0" class="text-root" font-size="13">Legend</text>
+
+    <rect x="0" y="10" width="20" height="15" class="folder"/>
+    <text x="30" y="22" class="text-file">Directory/Folder</text>
+
+    <rect x="0" y="35" width="20" height="15" class="file"/>
+    <text x="30" y="47" class="text-file">File</text>
+
+    <rect x="0" y="60" width="20" height="15" class="package"/>
+    <text x="30" y="72" class="text-file">Java Package</text>
+  </g>
+
+  <!-- Key Info Box -->
+  <g transform="translate(620, 150)">
+    <rect x="0" y="0" width="350" height="280" fill="#F0F0F0" stroke="#333" stroke-width="2" rx="5"/>
+    <text x="175" y="25" text-anchor="middle" class="text-root" font-size="12">Key Components</text>
+
+    <text x="15" y="50" class="text-folder">• 6 Servlets</text>
+    <text x="15" y="70" class="text-file" font-size="10">  Login, Menu, Analytics, KDS, Checkout, Health</text>
+
+    <text x="15" y="95" class="text-folder">• 5 Filters</text>
+    <text x="15" y="115" class="text-file" font-size="10">  Request Logging, LDAP Auth, CORS,</text>
+    <text x="15" y="130" class="text-file" font-size="10">  Security Headers, Cached Body</text>
+
+    <text x="15" y="155" class="text-folder">• 3 Services</text>
+    <text x="15" y="175" class="text-file" font-size="10">  User, Order, Analytics</text>
+
+    <text x="15" y="200" class="text-folder">• Utilities</text>
+    <text x="15" y="220" class="text-file" font-size="10">  FailureInjection, Constants, Security,</text>
+    <text x="15" y="235" class="text-file" font-size="10">  DateTime, Pagination, JSON Response</text>
+
+    <text x="15" y="260" class="text-folder">• Docker Services</text>
+    <text x="15" y="280" class="text-file" font-size="10">  Tomcat 11, PostgreSQL 15, OpenLDAP 1.5.0</text>
+  </g>
+
+  <!-- File Statistics -->
+  <g transform="translate(620, 500)">
+    <rect x="0" y="0" width="350" height="200" fill="#F5F5F5" stroke="#999" stroke-width="1" rx="5"/>
+    <text x="175" y="25" text-anchor="middle" class="text-root" font-size="12">Project Highlights</text>
+
+    <text x="15" y="50" class="text-file">Build Tool: Maven 3.6+</text>
+    <text x="15" y="70" class="text-file">JDK: Temurin 21 (Docker)</text>
+    <text x="15" y="90" class="text-file">Database: PostgreSQL 15 with HikariCP</text>
+    <text x="15" y="110" class="text-file">Authentication: OpenLDAP + Tomcat Realm</text>
+    <text x="15" y="130" class="text-file">Logging: SLF4J/JUL → catalina.log (daily)</text>
+    <text x="15" y="150" class="text-file">Network: Docker Compose on bytebite-net</text>
+    <text x="15" y="170" class="text-file">Failure Injection: 5 engineered scenarios</text>
+  </g>
+</svg>

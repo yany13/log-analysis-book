@@ -1,0 +1,250 @@
+<svg viewBox="0 0 1600 1200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .title { font-size: 26px; font-weight: bold; fill: #1a1a1a; }
+      .section-title { font-size: 14px; font-weight: bold; fill: #1a1a1a; }
+      .table-name { font-size: 12px; font-weight: bold; fill: #fff; }
+      .column-header { font-size: 11px; font-weight: bold; fill: #333; }
+      .column-text { font-size: 10px; fill: #333; }
+      .pk { fill: #ffd54f; }
+      .fk { fill: #b3e5fc; }
+      .table-box { stroke-width: 2; rx: 3; }
+    </style>
+    <marker id="relationship" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#666"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1600" height="1200" fill="#f8f9fa"/>
+
+  <!-- Title -->
+  <text x="800" y="35" class="title" text-anchor="middle">ByteBite Database Schema (PostgreSQL 15)</text>
+  <text x="800" y="60" font-size="14" text-anchor="middle" fill="#666">11 Tables • JSONB Support • Foreign Key Relationships</text>
+
+  <!-- ========== AUTHENTICATION TABLES ========== -->
+  <text x="100" y="95" class="section-title" fill="#1976d2">👤 Authentication &amp; Users</text>
+
+  <!-- TABLE: users -->
+  <g id="table-users">
+    <rect x="50" y="110" width="220" height="150" fill="#e3f2fd" stroke="#1976d2" class="table-box"/>
+    <rect x="50" y="110" width="220" height="25" fill="#1976d2"/>
+    <text x="160" y="128" class="table-name" text-anchor="middle">users</text>
+
+    <text x="60" y="145" class="column-header">🔑 user_id (SERIAL PK)</text>
+    <text x="60" y="160" class="column-text">username (VARCHAR U)</text>
+    <text x="60" y="174" class="column-text">email (VARCHAR)</text>
+    <text x="60" y="188" class="column-text">ldap_dn (VARCHAR)</text>
+    <text x="60" y="202" class="column-text">is_active (BOOLEAN)</text>
+    <text x="60" y="216" class="column-text">last_login (TIMESTAMP)</text>
+    <text x="60" y="230" class="column-text">created_at (TIMESTAMP)</text>
+    <text x="60" y="244" class="column-text">updated_at (TIMESTAMP)</text>
+  </g>
+
+  <!-- TABLE: user_roles -->
+  <g id="table-user_roles">
+    <rect x="300" y="110" width="220" height="110" fill="#f3e5f5" stroke="#7b1fa2" class="table-box"/>
+    <rect x="300" y="110" width="220" height="25" fill="#7b1fa2"/>
+    <text x="410" y="128" class="table-name" text-anchor="middle">user_roles</text>
+
+    <text x="310" y="145" class="column-header">🔑 role_id (SERIAL PK)</text>
+    <text x="310" y="160" class="column-text">role_name (VARCHAR)</text>
+    <text x="310" y="174" class="column-text">description (TEXT)</text>
+    <text x="310" y="188" class="column-text">created_at (TIMESTAMP)</text>
+  </g>
+
+  <!-- TABLE: user_role_mapping -->
+  <g id="table-urm">
+    <rect x="550" y="110" width="240" height="110" fill="#f8bbd0" stroke="#c2185b" class="table-box"/>
+    <rect x="550" y="110" width="240" height="25" fill="#c2185b"/>
+    <text x="670" y="128" class="table-name" text-anchor="middle">user_role_mapping</text>
+
+    <text x="560" y="145" class="column-header">🔑 user_id (FK)</text>
+    <text x="560" y="160" class="column-header">🔑 role_id (FK)</text>
+    <text x="560" y="174" class="column-text">assigned_at (TIMESTAMP)</text>
+  </g>
+
+  <!-- TABLE: sessions -->
+  <g id="table-sessions">
+    <rect x="830" y="110" width="240" height="150" fill="#e0f2f1" stroke="#00796b" class="table-box"/>
+    <rect x="830" y="110" width="240" height="25" fill="#00796b"/>
+    <text x="950" y="128" class="table-name" text-anchor="middle">sessions</text>
+
+    <text x="840" y="145" class="column-header">🔑 session_id (VARCHAR PK)</text>
+    <text x="840" y="160" class="column-text">🔗 user_id (FK→users)</text>
+    <text x="840" y="174" class="column-text">session_data (TEXT)</text>
+    <text x="840" y="188" class="column-text">ip_address (VARCHAR)</text>
+    <text x="840" y="202" class="column-text">is_active (BOOLEAN)</text>
+    <text x="840" y="216" class="column-text">expires_at (TIMESTAMP)</text>
+    <text x="840" y="230" class="column-text">created_at (TIMESTAMP)</text>
+    <text x="840" y="244" class="column-text">last_accessed (TIMESTAMP)</text>
+  </g>
+
+  <!-- ========== TRANSACTION TABLES ========== -->
+  <text x="100" y="295" class="section-title" fill="#f57c00">📦 Orders &amp; Transactions</text>
+
+  <!-- TABLE: orders -->
+  <g id="table-orders">
+    <rect x="50" y="310" width="240" height="170" fill="#fff3e0" stroke="#f57c00" class="table-box"/>
+    <rect x="50" y="310" width="240" height="25" fill="#f57c00"/>
+    <text x="170" y="328" class="table-name" text-anchor="middle">orders</text>
+
+    <text x="60" y="345" class="column-header">🔑 order_id (BIGSERIAL)</text>
+    <text x="60" y="360" class="column-text">🔗 user_id (FK→users)</text>
+    <text x="60" y="374" class="column-text">order_number (VARCHAR U)</text>
+    <text x="60" y="388" class="column-text">status (VARCHAR)</text>
+    <text x="60" y="402" class="column-text">total_amount (DECIMAL)</text>
+    <text x="60" y="416" class="column-text">tax_amount (DECIMAL)</text>
+    <text x="60" y="430" class="column-text">shipping_address (TEXT)</text>
+    <text x="60" y="444" class="column-text">order_date (TIMESTAMP)</text>
+    <text x="60" y="458" class="column-text">last_updated (TIMESTAMP)</text>
+  </g>
+
+  <!-- TABLE: order_items -->
+  <g id="table-order_items">
+    <rect x="320" y="310" width="240" height="140" fill="#ffccbc" stroke="#ff7043" class="table-box"/>
+    <rect x="320" y="310" width="240" height="25" fill="#ff7043"/>
+    <text x="440" y="328" class="table-name" text-anchor="middle">order_items</text>
+
+    <text x="330" y="345" class="column-header">🔑 order_item_id (BIGSERIAL)</text>
+    <text x="330" y="360" class="column-text">🔗 order_id (FK→orders)</text>
+    <text x="330" y="374" class="column-text">product_id (VARCHAR)</text>
+    <text x="330" y="388" class="column-text">product_name (VARCHAR)</text>
+    <text x="330" y="402" class="column-text">quantity (INT)</text>
+    <text x="330" y="416" class="column-text">unit_price (DECIMAL)</text>
+    <text x="330" y="430" class="column-text">total_price (DECIMAL)</text>
+  </g>
+
+  <!-- TABLE: kds_orders -->
+  <g id="table-kds_orders">
+    <rect x="590" y="310" width="240" height="170" fill="#e1bee7" stroke="#ab47bc" class="table-box"/>
+    <rect x="590" y="310" width="240" height="25" fill="#ab47bc"/>
+    <text x="710" y="328" class="table-name" text-anchor="middle">kds_orders</text>
+
+    <text x="600" y="345" class="column-header">🔑 kds_order_id (BIGSERIAL)</text>
+    <text x="600" y="360" class="column-text">🔗 order_id (FK→orders)</text>
+    <text x="600" y="374" class="column-text">kds_status (VARCHAR)</text>
+    <text x="600" y="388" class="column-text">estimated_ready_time</text>
+    <text x="600" y="402" class="column-text">actual_ready_time</text>
+    <text x="600" y="416" class="column-text">priority_level (INT)</text>
+    <text x="600" y="430" class="column-text">notes (TEXT)</text>
+    <text x="600" y="444" class="column-text">created_at (TIMESTAMP)</text>
+    <text x="600" y="458" class="column-text">updated_at (TIMESTAMP)</text>
+  </g>
+
+  <!-- TABLE: menu_items -->
+  <g id="table-menu_items">
+    <rect x="860" y="310" width="240" height="140" fill="#c8e6c9" stroke="#43a047" class="table-box"/>
+    <rect x="860" y="310" width="240" height="25" fill="#43a047"/>
+    <text x="980" y="328" class="table-name" text-anchor="middle">menu_items</text>
+
+    <text x="870" y="345" class="column-header">🔑 id (SERIAL PK)</text>
+    <text x="870" y="360" class="column-text">name (VARCHAR)</text>
+    <text x="870" y="374" class="column-text">price (DECIMAL)</text>
+    <text x="870" y="388" class="column-text">description (TEXT)</text>
+    <text x="870" y="402" class="column-text">category (VARCHAR)</text>
+    <text x="870" y="416" class="column-text">available (BOOLEAN)</text>
+    <text x="870" y="430" class="column-text">created_at (TIMESTAMP)</text>
+  </g>
+
+  <!-- ========== ANALYTICS &amp; LOGGING ========== -->
+  <text x="100" y="515" class="section-title" fill="#388e3c">📊 Analytics &amp; Logging</text>
+
+  <!-- TABLE: analytics_events -->
+  <g id="table-analytics">
+    <rect x="50" y="530" width="280" height="170" fill="#e8f5e9" stroke="#388e3c" class="table-box"/>
+    <rect x="50" y="530" width="280" height="25" fill="#388e3c"/>
+    <text x="190" y="548" class="table-name" text-anchor="middle">analytics_events</text>
+
+    <text x="60" y="565" class="column-header">🔑 event_id (BIGSERIAL PK)</text>
+    <text x="60" y="580" class="column-text">event_type (VARCHAR)</text>
+    <text x="60" y="594" class="column-text">event_data (JSONB 100KB)</text>
+    <text x="60" y="608" class="column-text">🔗 user_id (FK→users)</text>
+    <text x="60" y="622" class="column-text">🔗 session_id (FK→sessions)</text>
+    <text x="60" y="636" class="column-text">page_url (VARCHAR)</text>
+    <text x="60" y="650" class="column-text">ip_address (VARCHAR)</text>
+    <text x="60" y="664" class="column-text">created_at (TIMESTAMP)</text>
+  </g>
+
+  <!-- TABLE: application_logs -->
+  <g id="table-logs">
+    <rect x="360" y="530" width="280" height="170" fill="#ffccbc" stroke="#ff7043" class="table-box"/>
+    <rect x="360" y="530" width="280" height="25" fill="#ff7043"/>
+    <text x="500" y="548" class="table-name" text-anchor="middle">application_logs</text>
+
+    <text x="370" y="565" class="column-header">🔑 log_id (BIGSERIAL PK)</text>
+    <text x="370" y="580" class="column-text">level (VARCHAR)</text>
+    <text x="370" y="594" class="column-text">category (VARCHAR)</text>
+    <text x="370" y="608" class="column-text">message (TEXT)</text>
+    <text x="370" y="622" class="column-text">stack_trace (TEXT)</text>
+    <text x="370" y="636" class="column-text">source_class (VARCHAR)</text>
+    <text x="370" y="650" class="column-text">thread_name (VARCHAR)</text>
+    <text x="370" y="664" class="column-text">created_at (TIMESTAMP)</text>
+  </g>
+
+  <!-- TABLE: api_audit_log -->
+  <g id="table-audit">
+    <rect x="670" y="530" width="280" height="170" fill="#f3e5f5" stroke="#7b1fa2" class="table-box"/>
+    <rect x="670" y="530" width="280" height="25" fill="#7b1fa2"/>
+    <text x="810" y="548" class="table-name" text-anchor="middle">api_audit_log</text>
+
+    <text x="680" y="565" class="column-header">🔑 audit_id (BIGSERIAL PK)</text>
+    <text x="680" y="580" class="column-text">🔗 user_id (FK→users)</text>
+    <text x="680" y="594" class="column-text">api_endpoint (VARCHAR)</text>
+    <text x="680" y="608" class="column-text">http_method (VARCHAR)</text>
+    <text x="680" y="622" class="column-text">request_body (TEXT)</text>
+    <text x="680" y="636" class="column-text">response_status (INT)</text>
+    <text x="680" y="650" class="column-text">response_time_ms (INT)</text>
+    <text x="680" y="664" class="column-text">created_at (TIMESTAMP)</text>
+  </g>
+
+  <!-- ========== SUMMARY STATISTICS ========== -->
+  <rect x="50" y="740" width="900" height="120" fill="#fff8e1" stroke="#fbc02d" stroke-width="2" rx="3"/>
+
+  <text x="500" y="765" class="section-title" text-anchor="middle" fill="#f57f00">📈 Schema Summary</text>
+
+  <text x="70" y="790" class="column-header">Total Tables: 11</text>
+  <text x="70" y="809" class="column-text">• Authentication: users, user_roles, user_role_mapping, sessions (4)</text>
+  <text x="70" y="826" class="column-text">• Transactions: orders, order_items, kds_orders, menu_items (4)</text>
+  <text x="70" y="843" class="column-text">• Analytics/Logging: analytics_events, application_logs, api_audit_log (3)</text>
+
+  <text x="620" y="790" class="column-header">Pre-seeded Data:</text>
+  <text x="620" y="809" class="column-text">• 16 menu items (3 pizzas, 3 burgers, 3 pastas, etc.)</text>
+  <text x="620" y="826" class="column-text">• 5 roles (ADMIN, MANAGER, STAFF, CUSTOMER, KDS_OPERATOR)</text>
+  <text x="620" y="843" class="column-text">• ~10,000 analytics events (for OOM testing)</text>
+
+  <!-- ========== KEY PATTERNS ========== -->
+  <rect x="50" y="890" width="900" height="280" fill="#f0f4c3" stroke="#9ccc65" stroke-width="2" rx="3"/>
+
+  <text x="500" y="915" class="section-title" text-anchor="middle" fill="#558b2f">🔧 Data Relationships &amp; Failure Points</text>
+
+  <!-- Relationship 1 -->
+  <rect x="70" y="935" width="420" height="70" fill="#fff9c4" stroke="#fbc02d" stroke-width="1" rx="2"/>
+  <text x="80" y="953" class="column-header">📍 1:N Relationships</text>
+  <text x="80" y="970" class="column-text">• users ← sessions (one user, many sessions)</text>
+  <text x="80" y="987" class="column-text">• users ← orders (one user, many orders)</text>
+  <text x="80" y="1004" class="column-text">• orders ← order_items (one order, many line items)</text>
+
+  <!-- Relationship 2 -->
+  <rect x="520" y="935" width="420" height="70" fill="#fff9c4" stroke="#fbc02d" stroke-width="1" rx="2"/>
+  <text x="530" y="953" class="column-header">📍 M:M Relationships</text>
+  <text x="530" y="970" class="column-text">• users ←→ user_roles (junction: user_role_mapping)</text>
+  <text x="530" y="987" class="column-text">• One user can have multiple roles</text>
+  <text x="530" y="1004" class="column-text">• Role-based access control (RBAC) enabled</text>
+
+  <!-- Failure Point 1 -->
+  <rect x="70" y="1025" width="420" height="110" fill="#ffccbc" stroke="#ff7043" stroke-width="1" rx="2"/>
+  <text x="80" y="1043" class="column-header" fill="#d32f2f">⚠️ DB_LEAK Failure Point</text>
+  <text x="80" y="1061" class="column-text">Triggered: GET /api/menu?failureType=db_leak</text>
+  <text x="80" y="1078" class="column-text">Impact: Connection not closed after SELECT menu_items</text>
+  <text x="80" y="1095" class="column-text">Result: HikariCP pool exhaustion (max 20 connections)</text>
+  <text x="80" y="1112" class="column-text">Log Signal: "Cannot get a connection, pool error"</text>
+
+  <!-- Failure Point 2 -->
+  <rect x="520" y="1025" width="420" height="110" fill="#e1bee7" stroke="#ab47bc" stroke-width="1" rx="2"/>
+  <text x="530" y="1043" class="column-header" fill="#6a1b9a">⚠️ OOM Failure Point</text>
+  <text x="530" y="1061" class="column-text">Triggered: GET /api/analytics?action=all-time-report&amp;failureType=oom</text>
+  <text x="530" y="1078" class="column-text">Impact: SELECT * FROM analytics_events (10,000 rows × 100KB)</text>
+  <text x="530" y="1095" class="column-text">Result: OutOfMemoryError (Xmx=512m heap exhausted)</text>
+  <text x="530" y="1112" class="column-text">Log Signal: "java.lang.OutOfMemoryError: heap space"</text>
+</svg>

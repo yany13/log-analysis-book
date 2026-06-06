@@ -1,0 +1,45 @@
+# Git attributes for the book project
+
+# Auto detect text files and normalize line endings to LF
+* text=auto
+
+# Markdown files
+*.md text eol=lf
+*.markdown text eol=lf
+
+# Documentation
+*.txt text eol=lf
+*.rst text eol=lf
+
+# Code (if any Python/JS in book)
+*.py text eol=lf
+*.js text eol=lf
+*.json text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+
+# SVG (text-based)
+*.svg text eol=lf
+
+# Binary files - don't auto-convert
+*.zip binary
+*.tar binary
+*.tar.gz binary
+*.rar binary
+*.7z binary
+
+# Images (binary)
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+
+# Documents (binary when compiled)
+*.pdf binary
+*.docx binary
+*.epub binary
+*.mobi binary
+
+# Exclude backup files from diffs
+*.backup.* merge=union
