@@ -1,4 +1,4 @@
-# AI Agents for Production Troubleshooting: A Hands-On Learning Book
+# Middleware Troubleshooting Use Cases: A Traditional Approach with AI Assist
 
 **Learn to design and deploy AI Agents that diagnose production failures through log analysis.**
 
